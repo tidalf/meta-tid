@@ -1,0 +1,30 @@
+From d77300664e84d51bd0b04042a7884c5e4daf063d Mon Sep 17 00:00:00 2001
+From: Cui Gao <gao.cui@windsolve.com>
+Date: Sun, 3 Aug 2014 02:41:02 +0800
+Subject: [PATCH 13/15] add reset control for ethernet phy of curie board
+
+---
+ arch/arm/boot/dts/imx6qdl-curie.dtsi |    7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-curie.dtsi b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+index 2335de4..28dd7a4 100644
+--- a/arch/arm/boot/dts/imx6qdl-curie.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+@@ -17,6 +17,13 @@
+ 		reg = <0x10000000 0x40000000>;
+ 	};
+ 
++	enet-reset {
++		compatible = "gpio-reset";
++		reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
++		reset-delay-us = <100>;
++		#reset-cells = <0>;
++	};
++
+ 	wifi_cs: wifi-cs {
+ 		compatible = "gpio-reset";
+ 		reset-gpios = <&gpio2 4 GPIO_ACTIVE_HIGH>;
+-- 
+1.7.9.5
+

@@ -1,0 +1,23 @@
+From c1cece94ec710694b7cd77fa9fb3b89e71014138 Mon Sep 17 00:00:00 2001
+From: Cui Gao <gao.cui@windsolve.com>
+Date: Fri, 1 Aug 2014 16:23:14 +0800
+Subject: [PATCH 07/15] add sata support for curie board (imx6q only)
+
+---
+ arch/arm/boot/dts/imx6q-curie.dts |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6q-curie.dts b/arch/arm/boot/dts/imx6q-curie.dts
+index 8b275cc..3929de1 100644
+--- a/arch/arm/boot/dts/imx6q-curie.dts
++++ b/arch/arm/boot/dts/imx6q-curie.dts
+@@ -19,3 +19,6 @@
+ 	compatible = "ws,imx6q-curie", "fsl,imx6q";
+ };
+ 
++&sata {
++	status = "okay";
++};
+-- 
+1.7.9.5
+

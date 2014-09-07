@@ -1,0 +1,88 @@
+From f140044f8f4ee065d7a08807a2ee0d0df57077fe Mon Sep 17 00:00:00 2001
+From: Jens Rehsack <sno@netbsd.org>
+Date: Wed, 30 Jul 2014 14:20:52 +0200
+Subject: [PATCH 3/3] Add platform specific modifications for Curie
+
+---
+ drivers/net/wireless/rtl8189es/Makefile           | 11 +++++++++--
+ drivers/net/wireless/rtl8189es/include/autoconf.h | 10 +++++-----
+ 2 files changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/wireless/rtl8189es/Makefile b/drivers/net/wireless/rtl8189es/Makefile
+index 5a3ca7c..3afe93f 100644
+--- a/drivers/net/wireless/rtl8189es/Makefile
++++ b/drivers/net/wireless/rtl8189es/Makefile
+@@ -58,14 +58,14 @@ CONFIG_FIND_BEST_CHANNEL = n
+ CONFIG_REDUCE_TX_CPU_LOADING = n
+ ######################## Wake On Lan ##########################
+ CONFIG_WOWLAN = y
+-CONFIG_GPIO_WAKEUP = y
++CONFIG_GPIO_WAKEUP = n
+ CONFIG_PNO_SUPPORT = n
+ CONFIG_PNO_SET_DEBUG = n
+ CONFIG_AP_WOWLAN = n
+ ######### Notify SDIO Host Keep Power During Syspend ##########
+ CONFIG_RTW_SDIO_PM_KEEP_POWER = y
+ ###################### Platform Related #######################
+-CONFIG_PLATFORM_I386_PC = y
++CONFIG_PLATFORM_I386_PC = n
+ CONFIG_PLATFORM_ANDROID_X86 = n
+ CONFIG_PLATFORM_JB_X86 = n
+ CONFIG_PLATFORM_ARM_S3C2K4 = n
+@@ -101,6 +101,7 @@ CONFIG_PLATFORM_ARM_SUNxI = n
+ CONFIG_PLATFORM_ARM_SUN6I = n
+ CONFIG_PLATFORM_ARM_SUN7I = n
+ CONFIG_PLATFORM_ARM_SUN8I = n
++CONFIG_PLATFORM_ARM_IMX6 = y
+ CONFIG_PLATFORM_ACTIONS_ATM702X = n
+ CONFIG_PLATFORM_ACTIONS_ATV5201 = n
+ CONFIG_PLATFORM_ARM_RTD299X = n
+@@ -1155,6 +1156,12 @@ CROSS_COMPILE := /home/android_sdk/Allwinner/a31/kitkat-a3x_v4.5/lichee/buildroo
+ KSRC :=/home/android_sdk/Allwinner/a31/kitkat-a3x_v4.5/lichee/linux-3.3
+ endif
+ 
++ifeq ($(CONFIG_PLATFORM_ARM_IMX6), y)
++EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
++EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_IMX6
++ARCH := arm
++endif
++
+ ifeq ($(CONFIG_PLATFORM_ARM_SUN7I), y)
+ EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+ EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN7I
+diff --git a/drivers/net/wireless/rtl8189es/include/autoconf.h b/drivers/net/wireless/rtl8189es/include/autoconf.h
+index 3f3c126..c5116e8 100644
+--- a/drivers/net/wireless/rtl8189es/include/autoconf.h
++++ b/drivers/net/wireless/rtl8189es/include/autoconf.h
+@@ -37,7 +37,7 @@
+ #define CONFIG_SDIO_HCI
+ #define PLATFORM_LINUX
+ 
+-//#define CONFIG_IOCTL_CFG80211
++#define CONFIG_IOCTL_CFG80211
+ 
+ #ifdef CONFIG_IOCTL_CFG80211
+ 	//#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
+@@ -284,15 +284,15 @@
+ /*
+  * Debug Related Config
+  */
+-#define DBG	1
++//#define DBG	1
+ 
+-#define CONFIG_DEBUG /* DBG_871X, etc... */
++//#define CONFIG_DEBUG /* DBG_871X, etc... */
+ //#define CONFIG_DEBUG_RTL871X /* RT_TRACE, RT_PRINT_DATA, _func_enter_, _func_exit_ */
+ 
+ #define CONFIG_PROC_DEBUG
+ 
+-#define DBG_CONFIG_ERROR_DETECT
+-#define DBG_CONFIG_ERROR_RESET
++//#define DBG_CONFIG_ERROR_DETECT
++//#define DBG_CONFIG_ERROR_RESET
+ 
+ //#define CONFIG_DISABLE_ODM
+ 
+-- 
+1.9.1
+

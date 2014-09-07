@@ -1,0 +1,54 @@
+From 7b06df23b4a1208b76ad2faf56dd5825d63f5fad Mon Sep 17 00:00:00 2001
+From: Cui Gao <gao.cui@windsolve.com>
+Date: Fri, 1 Aug 2014 16:19:37 +0800
+Subject: [PATCH 06/15] add sdhci support for curie board. SDHC2: Wi-Fi module
+ SDHC3: SD Card Slot SDHC4: eMMC
+
+---
+ arch/arm/boot/dts/imx6qdl-curie.dtsi |   33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-curie.dtsi b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+index 0eb9489..8c7fe38 100644
+--- a/arch/arm/boot/dts/imx6qdl-curie.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+@@ -172,3 +172,36 @@
+ 	fsl,wdog-reset = <2>; /* watchdog select of reset source */
+ };
+ 
++&usdhc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc2_2>;
++	bus-width = <4>;
++	non-removable;
++	no-1-8-v;
++	keep-power-in-suspend;
++	enable-sdio-wakeup;
++	status = "okay";
++};
++
++&usdhc3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc3_1>;
++	bus-width = <8>;
++	cd-gpios = <&gpio6 8 0>;
++	wp-gpios = <&gpio6 15 0>;
++	no-1-8-v;
++	keep-power-in-suspend;
++	enable-sdio-wakeup;
++	status = "okay";
++};
++
++&usdhc4 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc4_1>;
++	bus-width = <8>;
++	non-removable;
++	no-1-8-v;
++	keep-power-in-suspend;
++	status = "okay";
++};
++
+-- 
+1.7.9.5
+

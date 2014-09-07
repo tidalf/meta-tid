@@ -1,0 +1,31 @@
+From 32330825f76359efa066ff8b6cf963aff71d56e1 Mon Sep 17 00:00:00 2001
+From: Cui Gao <gao.cui@windsolve.com>
+Date: Fri, 1 Aug 2014 15:55:55 +0800
+Subject: [PATCH 05/15] add power control
+
+---
+ arch/arm/boot/dts/imx6qdl-curie.dtsi |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-curie.dtsi b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+index 29ec29a..0eb9489 100644
+--- a/arch/arm/boot/dts/imx6qdl-curie.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+@@ -162,6 +162,13 @@
+ &cpu0 {
+ 	arm-supply = <&sw1a_reg>;
+ 	soc-supply = <&sw1c_reg>;
+-	pu-supply = <&pu_dummy>; /* use pu_dummy if VDDSOC share with VDDPU */
++};
++
++&gpc {
++	fsl,cpu_pupscr_sw2iso = <0xf>;
++	fsl,cpu_pupscr_sw = <0xf>;
++	fsl,cpu_pdnscr_iso2sw = <0x1>;
++	fsl,cpu_pdnscr_iso = <0x1>;
++	fsl,wdog-reset = <2>; /* watchdog select of reset source */
+ };
+ 
+-- 
+1.7.9.5
+

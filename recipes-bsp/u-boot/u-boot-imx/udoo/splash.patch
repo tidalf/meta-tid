@@ -1,0 +1,27 @@
+diff -ura git.orig/include/configs/udoo.h git/include/configs/udoo.h
+--- git.orig/include/configs/udoo.h	2014-08-24 14:20:44.015133551 +0200
++++ git/include/configs/udoo.h	2014-08-24 14:23:26.618233886 +0200
+@@ -17,6 +17,22 @@
+ #define CONFIG_MX6
+ #define CONFIG_DISPLAY_CPUINFO
+ #define CONFIG_DISPLAY_BOARDINFO
++#define CONFIG_CONSOLE_DEV              "ttymxc0"
++#define CONFIG_MMCROOT                  "/dev/mmcblk1p2"
++#define CONFIG_DEFAULT_FDT_FILE "imx6q-udoo.dtb"
++#define CONFIG_SPLASH_SCREEN
++#define CONFIG_VIDEO
++#define CONFIG_VIDEO_IPUV3
++#define CONFIG_CFB_CONSOLE
++#define CONFIG_VGA_AS_SINGLE_DEVICE
++#define CONFIG_SYS_CONSOLE_IS_IN_ENV
++#define CONFIG_VIDEO_BMP_RLE8
++#define CONFIG_SPLASH_SCREEN_ALIGN
++#define CONFIG_BMP_16BPP
++#define CONFIG_VIDEO_LOGO
++#define CONFIG_VIDEO_BMP_LOGO
++#define CONFIG_IPUV3_CLK 260000000
++#define CONFIG_IMX_HDMI
+
+ 
+ #define MACH_TYPE_UDOO		4800
+ #define CONFIG_MACH_TYPE	MACH_TYPE_UDOO

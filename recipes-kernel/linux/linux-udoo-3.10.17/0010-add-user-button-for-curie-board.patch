@@ -1,0 +1,33 @@
+From 8b5b482bfaec6397c7e55a9ca9b62d4c8925f812 Mon Sep 17 00:00:00 2001
+From: Cui Gao <gao.cui@windsolve.com>
+Date: Fri, 1 Aug 2014 17:43:24 +0800
+Subject: [PATCH 10/15] add user button for curie board
+
+---
+ arch/arm/boot/dts/imx6qdl-curie.dtsi |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-curie.dtsi b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+index a106774..03f19f7 100644
+--- a/arch/arm/boot/dts/imx6qdl-curie.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-curie.dtsi
+@@ -57,6 +57,16 @@
+ 		};
+ 	};
+ 
++	gpio-keys {
++		compatible = "gpio-keys";
++		enter-key {
++			label = "enter";
++			gpios = <&gpio3 5 GPIO_ACTIVE_LOW>;
++			linux,code = <28>; /* KEY_ENTER */
++			gpio-key,wakeup;
++		};
++	};
++
+ };
+ 
+ &uart1 {
+-- 
+1.7.9.5
+
