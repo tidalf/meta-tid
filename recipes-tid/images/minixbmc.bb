@@ -21,6 +21,7 @@ IMAGE_INSTALL += " \
     lirc \ 
     e2fsprogs \
     libbluray \
+    watchdog \
     parted \
     strace \
     gdb \

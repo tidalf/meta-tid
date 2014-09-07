@@ -16,5 +16,6 @@ BBLAYERS = " \
   ${BSPDIR}/sources/meta-fsl-demos \
   ${BSPDIR}/sources/meta-openembedded/meta-networking \
   ${BSPDIR}/sources/meta-openembedded/meta-filesystems \
+  ${BSPDIR}/sources/meta-openembedded/meta-multimedia \
   ${BSPDIR}/sources/meta-virtualization \
 "
