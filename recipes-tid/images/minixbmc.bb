@@ -19,6 +19,7 @@ BOOTSCRIPTS="uEnv.txt"
 IMAGE_INSTALL += " \
     run-postinsts \
     lirc \ 
+    wget \
     e2fsprogs \
     libbluray \
     watchdog \
@@ -26,6 +27,7 @@ IMAGE_INSTALL += " \
     strace \
     gdb \
     tvheadend \
+    arduino \
     oracle-jse-ejre-arm \
     xauth \
     x11vnc \

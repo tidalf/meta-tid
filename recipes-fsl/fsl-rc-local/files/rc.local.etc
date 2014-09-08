@@ -22,3 +22,7 @@ sleep 1
 #/usr/bin/tvheadend -l /dev/null &
 /imx6/xbmc/lib/xbmc/xbmc.bin 2> /dev/null &
 irexec -d
+sleep 10
+transmission-daemon -g /etc/transmission-daemon
+/usr/lib/sickbeard-git/SickBeard.py -d
+nzbgetd start

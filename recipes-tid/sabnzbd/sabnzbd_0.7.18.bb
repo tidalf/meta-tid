@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://GPL2.txt;md5=892f569a555ba9c07a568a7c0c4fa63a"
 DEPENDS = "python"
 RDEPENDS_${PN} = "\
 	python-core python-shell python-compression python-crypt python-ctypes python-sqlite3 \
-	python-cheetah python-misc python-subprocess python-html python-email python-yenc \
+	python-cheetah python-misc python-subprocess python-html python-email python-yenc python-CherryPy \
 	"
 # RRECOMMENDS_${PN} = "unrar"
 SRC_URI = "${SOURCEFORGE_MIRROR}/sabnzbdplus/sabnzbdplus/${PV}/SABnzbd-${PV}-src.tar.gz"
