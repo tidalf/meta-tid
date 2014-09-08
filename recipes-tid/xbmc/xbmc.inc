@@ -9,7 +9,8 @@ INC_PR = "r1"
 
 # file://vp8ts.patch 
 #           file://xbmc-999.91-PR5202.patch 
-SRC_URI = "git://github.com/xbmc-imx6/xbmc.git \
+# SRC_URI = "git://github.com/xbmc-imx6/xbmc.git;branch=master-pr 
+SRC_URI = "git://github.com/xbmc-imx6/xbmc.git;branch=gotham13.2final \
            "
 S = "${WORKDIR}/git"
 
@@ -32,7 +33,7 @@ do_configure() {
   #We will use the host java during build because there is no native recipe for full openjdk and jamvm is not able to build xbmc
   # export JAVA="/usr/bin/java"
 
-  sh bootstrap
+   sh bootstrap
 #  oe_runconf
   # Call manually configure instead of oe_runconf because of specific prefix /imx6/xbmc...
   ${S}/configure  --build=${BUILD_SYS} \

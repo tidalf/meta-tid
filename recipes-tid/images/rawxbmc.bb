@@ -1,4 +1,4 @@
-include recipes-core/images/core-image-minimal.bb
+include recipes-core/images/core-image-base.bb
 
 # SOC_EXTRA_IMAGE_FEATURES ?= "tools-testapps"
 SOC_EXTRA_IMAGE_FEATURES=""
