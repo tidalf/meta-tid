@@ -16,6 +16,7 @@ BOOTSCRIPTS="uEnv.txt"
 #   xserver-xorg-fbdev 
 #    xf86-video-imxfb-vivante 
 #   xfce4-session 
+#    arduino 
 IMAGE_INSTALL += " \
     run-postinsts \
     lirc \ 
@@ -27,7 +28,6 @@ IMAGE_INSTALL += " \
     strace \
     gdb \
     tvheadend \
-    arduino \
     oracle-jse-ejre-arm \
     xauth \
     x11vnc \
