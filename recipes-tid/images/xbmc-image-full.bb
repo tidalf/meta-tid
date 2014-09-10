@@ -17,6 +17,10 @@ BOOTSCRIPTS="uEnv.txt"
 #    xf86-video-imxfb-vivante 
 #   xfce4-session 
 IMAGE_INSTALL += " \
+    systemd-serialgetty \
+    systemd-analyze \
+    dietsplash \
+    util-linux-agetty \
     run-postinsts \
     net-tools \
     lirc \ 
