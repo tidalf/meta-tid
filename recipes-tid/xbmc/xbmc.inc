@@ -2,7 +2,7 @@ DESCRIPTION = "software media player and entertainment hub"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://copying.txt;md5=4cea88e622381d1ad6e43f07c47513b5"
-DEPENDS = "mysql5 libsamplerate0 alsa-lib udev libvorbis boost libass mpeg2dec libmad libmodplug tiff yajl libtinyxml taglib libcdio jasper libmicrohttpd libssh samba rtmpdump libnfs samba swig-native libxslt libplist shairplay flac pulseaudio"
+DEPENDS = "mysql5 libsamplerate0 alsa-lib udev libvorbis boost libass mpeg2dec libmad libmodplug tiff yajl libtinyxml taglib libcdio jasper libmicrohttpd libssh rtmpdump libnfs samba swig-native libxslt libplist shairplay flac pulseaudio"
 DEPENDS_append_mx6 = " virtual/kernel virtual/libgles2 virtual/egl libfslvpuwrap libcec"
 
 INC_PR = "r1"
@@ -11,10 +11,11 @@ INC_PR = "r1"
 #           file://xbmc-999.91-PR5202.patch 
 # SRC_URI = "git://github.com/xbmc-imx6/xbmc.git;branch=master-pr 
 SRC_URI = "git://github.com/xbmc-imx6/xbmc.git;branch=gotham13.2final \
+           file://xbmc.service \
            "
 S = "${WORKDIR}/git"
 
-inherit autotools lib_package pkgconfig gettext python-dir
+inherit autotools lib_package pkgconfig gettext python-dir systemd
 
 EXTRA_OECONF="--prefix=/imx6/xbmc --disable-x11 --disable-sdl --disable-xrandr --disable-gl --disable-vdpau --disable-vaapi --disable-openmax --enable-neon --enable-gles --enable-udev --enable-codec=imxvpu --disable-debug --disable-texturepacker --enable-airplay --enable-airtunes"
 
@@ -42,6 +43,17 @@ do_configure() {
                   ${@append_libtool_sysroot(d)} \
                   ${EXTRA_OECONF}
 }
+
+do_install_append() { 
+                 install -d ${D}${systemd_unitdir}/system
+                 install -d ${D}${sysconfdir}/systemd/system/multi-user.wants
+                 install -m 0644 ${WORKDIR}/xbmc.service ${D}${systemd_unitdir}/system
+}
+
+SYSTEMD_PACKAGES = "${PN}"
+SYSTEMD_SERVICE_${PN} = "xbmc.service"
+
+# FILES_${PN} += "/lib/systemd/system/xbmc.service"
 
 # XBMC plugins requires python modules and dynamically loaded libraries
 RDEPENDS_${PN} = " python-stringold \

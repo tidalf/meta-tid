@@ -1,0 +1,122 @@
+From c7db7e468617822adcbfe287c06a48d894f47847 Mon Sep 17 00:00:00 2001
+From: mxt512 <mtx512@yahoo.co.uk>
+Date: Mon, 10 Feb 2014 20:41:41 +0000
+Subject: [PATCH] Fix USB support
+
+---
+ drivers/usb/chipidea/ci_hdrc_imx.c | 20 +++++++++++++++++++-
+ drivers/usb/chipidea/usbmisc_imx.c | 18 ++++++++++++++++++
+ 2 files changed, 37 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/chipidea/ci_hdrc_imx.c b/drivers/usb/chipidea/ci_hdrc_imx.c
+index 0cb2961..bb58be7 100644
+--- a/drivers/usb/chipidea/ci_hdrc_imx.c
++++ b/drivers/usb/chipidea/ci_hdrc_imx.c
+@@ -71,6 +71,7 @@ struct ci_hdrc_imx_data {
+ 	struct usb_phy *phy;
+ 	struct platform_device *ci_pdev;
+ 	struct clk *clk;
++	struct clk *clk_phy;
+ 	struct imx_usbmisc_data *usbmisc_data;
+ 	bool supports_runtime_pm;
+ 	bool in_lpm;
+@@ -195,10 +196,22 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	data->clk_phy = devm_clk_get(&pdev->dev, "phy");
++	if (IS_ERR(data->clk_phy)) {
++		data->clk_phy = NULL;
++	} else {
++		ret = clk_prepare_enable(data->clk_phy);
++		if (ret) {
++			dev_err(&pdev->dev,
++				"Failed to enable clk_phy: %d\n", ret);
++			goto err_clk;
++		}
++	}
++
+ 	data->phy = devm_usb_get_phy_by_phandle(&pdev->dev, "fsl,usbphy", 0);
+ 	if (IS_ERR(data->phy)) {
+ 		ret = PTR_ERR(data->phy);
+-		goto err_clk;
++		goto err_clk_phy;
+ 	}
+ 
+ 	pdata.phy = data->phy;
+@@ -289,6 +302,9 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
+ 
+ disable_device:
+ 	ci_hdrc_remove_device(data->ci_pdev);
++err_clk_phy:
++	if (data->clk_phy)
++		clk_disable_unprepare(data->clk_phy);
+ remove_charger:
+ 	if (data->imx6_usb_charger_detection)
+ 		imx6_usb_remove_charger(&data->charger);
+@@ -303,6 +319,8 @@ static int ci_hdrc_imx_remove(struct platform_device *pdev)
+ 	struct ci_hdrc_imx_data *data = platform_get_drvdata(pdev);
+ 
+ 	ci_hdrc_remove_device(data->ci_pdev);
++	if (data->clk_phy)
++		clk_disable_unprepare(data->clk_phy);
+ 	if (data->supports_runtime_pm) {
+ 		pm_runtime_get_sync(&pdev->dev);
+ 		pm_runtime_disable(&pdev->dev);
+diff --git a/drivers/usb/chipidea/usbmisc_imx.c b/drivers/usb/chipidea/usbmisc_imx.c
+index 576939e..bec00a8 100644
+--- a/drivers/usb/chipidea/usbmisc_imx.c
++++ b/drivers/usb/chipidea/usbmisc_imx.c
+@@ -11,6 +11,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/of_platform.h>
++#include <linux/clk.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/delay.h>
+@@ -45,6 +46,7 @@ struct usbmisc_ops {
+ struct imx_usbmisc {
+ 	void __iomem *base;
+ 	spinlock_t lock;
++    struct clk *clk;
+ 	const struct usbmisc_ops *ops;
+ };
+ 
+@@ -216,6 +218,7 @@ static int usbmisc_imx_probe(struct platform_device *pdev)
+ {
+ 	struct resource	*res;
+ 	struct imx_usbmisc *data;
++    int ret;
+ 	struct of_device_id *tmp_dev;
+ 
+ 	if (usbmisc)
+@@ -232,6 +235,20 @@ static int usbmisc_imx_probe(struct platform_device *pdev)
+ 	if (IS_ERR(data->base))
+ 		return PTR_ERR(data->base);
+ 
++    data->clk = devm_clk_get(&pdev->dev, NULL);
++    if (IS_ERR(data->clk)) {
++		dev_err(&pdev->dev,
++        	"failed to get clock, err=%ld\n", PTR_ERR(data->clk));
++		return PTR_ERR(data->clk);
++    }
++ 
++   ret = clk_prepare_enable(data->clk);
++   if (ret) {
++		dev_err(&pdev->dev,
++			"clk_prepare_enable failed, err=%d\n", ret);
++        return ret;
++   }
++ 
+ 	tmp_dev = (struct of_device_id *)
+ 		of_match_device(usbmisc_imx_dt_ids, &pdev->dev);
+ 	data->ops = (const struct usbmisc_ops *)tmp_dev->data;
+@@ -242,6 +259,7 @@ static int usbmisc_imx_probe(struct platform_device *pdev)
+ 
+ static int usbmisc_imx_remove(struct platform_device *pdev)
+ {
++    clk_disable_unprepare(usbmisc->clk);
+ 	usbmisc = NULL;
+ 	return 0;
+ }

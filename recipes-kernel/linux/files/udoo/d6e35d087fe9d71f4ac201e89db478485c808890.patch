@@ -1,0 +1,21 @@
+From d6e35d087fe9d71f4ac201e89db478485c808890 Mon Sep 17 00:00:00 2001
+From: mxt512 <mtx512@yahoo.co.uk>
+Date: Sat, 15 Feb 2014 16:21:42 +0000
+Subject: [PATCH] GPIO_16 is connected to SAM3X vbus
+
+---
+ arch/arm/boot/dts/imx6q-udoo.dts | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/imx6q-udoo.dts b/arch/arm/boot/dts/imx6q-udoo.dts
+index d53ec05..061e561 100644
+--- a/arch/arm/boot/dts/imx6q-udoo.dts
++++ b/arch/arm/boot/dts/imx6q-udoo.dts
+@@ -180,7 +180,6 @@
+ 				MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK	0x1b0b0
+ 				MX6QDL_PAD_ENET_MDIO__ENET_MDIO		0x1b0b0
+ 				MX6QDL_PAD_ENET_MDC__ENET_MDC		0x1b0b0
+-				MX6QDL_PAD_GPIO_16__ENET_REF_CLK	0x4001b0a8
+ 				MX6QDL_PAD_EIM_D23__GPIO3_IO23      0x80000000 /* reset */
+ 			>;
+ 		};

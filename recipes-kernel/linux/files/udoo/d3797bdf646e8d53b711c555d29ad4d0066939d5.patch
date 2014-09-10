@@ -1,0 +1,21 @@
+From d3797bdf646e8d53b711c555d29ad4d0066939d5 Mon Sep 17 00:00:00 2001
+From: mxt512 <mtx512@yahoo.co.uk>
+Date: Mon, 10 Feb 2014 20:38:37 +0000
+Subject: [PATCH] Add uddo dts to Make file
+
+---
+ arch/arm/boot/dts/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index f43b68b..7dbe4df 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -131,6 +131,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
+ 	imx6q-sabresd-hdcp.dtb \
+ 	imx6q-sabresd-ldo.dtb \
+ 	imx6q-sbc6x.dtb \
++	imx6q-udoo.dtb \
+ 	imx6sl-evk.dtb \
+ 	imx6sl-evk-csi.dtb \
+ 	imx6sl-evk-ldo.dtb \

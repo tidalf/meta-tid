@@ -2,7 +2,7 @@ DESCRIPTION = "Sabnzbd"
 LICENSE = "GPLv2 & MIT"
 LIC_FILES_CHKSUM = "file://GPL2.txt;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-DEPENDS = "python"
+DEPENDS = "python python-CherryPy"
 RDEPENDS_${PN} = "\
 	python-core python-shell python-compression python-crypt python-ctypes python-sqlite3 \
 	python-cheetah python-misc python-subprocess python-html python-email python-yenc python-CherryPy \

@@ -3,9 +3,10 @@ LICENSE = "GPLv2 & MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a1923fe8f8ff37c33665716af0ec84f1"
 DEPENDS = "curl libevent intltool"
 
-inherit autotools 
+inherit autotools systemd
 
 SRC_URI = "http://download.transmissionbt.com/files/transmission-2.84.tar.xz \
+           file://transmission-daemon.service \
            file://settings.json"
 
 SRC_URI[md5sum] = "411aec1c418c14f6765710d89743ae42"
@@ -19,6 +20,12 @@ do_configure() {
 }
 
 do_install_append() {
-       	install -d ${D}/etc/transmission-server
-	install -m 755 ${WORKDIR}/settings.json ${D}/etc/transmission-server
+       	install -d ${D}/etc/transmission-daemon
+	install -m 0644 ${WORKDIR}/settings.json ${D}/etc/transmission-daemon
+        install -d ${D}${systemd_unitdir}/system
+        install -m 0644 ${WORKDIR}/transmission-daemon.service ${D}${systemd_unitdir}/system
+
 }
+
+SYSTEMD_PACKAGES = "${PN}"
+SYSTEMD_SERVICE_${PN} = "transmission-daemon.service"

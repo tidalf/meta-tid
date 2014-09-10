@@ -1,3 +1,4 @@
+# not working
 DESCRIPTION = "Arduino IDE HFP for Udoo"
 LICENSE = "GPLv2 & MIT"
 LIC_FILES_CHKSUM = "file://revisions.txt;md5=20319c61d8a41b964f195fa6a4ee1f4f"
