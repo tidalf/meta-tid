@@ -5,7 +5,7 @@ After=network.service
 
 [Service]
 # ExecStartPre=/usr/bin/waitformysql.sh
-ExecStartPre="echo 0 >  /sys/class/graphics/fbcon/cursor_blink; echo 131072 >/proc/sys/vm/min_free_kbytes"
+ExecStartPre=/bin/sh -c "echo 0 >  /sys/class/graphics/fbcon/cursor_blink; echo 131072 >/proc/sys/vm/min_free_kbytes"
 ExecStart=/imx6/xbmc/lib/xbmc/xbmc.bin --standalone
 ExecStopPost=/bin/systemctl --user isolate default.target
 Environment=HOME=/home/root
