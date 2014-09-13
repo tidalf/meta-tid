@@ -13,6 +13,7 @@ SRC_URI = " \
  file://advancedsettings.xml \
  file://guisettings.xml \
  file://get_dvb_firmware \
+ file://splash.logo \
 "
 
 do_install () {
@@ -25,6 +26,7 @@ install -m 0644 ${WORKDIR}/profile ${D}/home/root/.profile
 install -d ${D}/home/root/.xbmc/userdata/
 install -m 0644 ${WORKDIR}/advancedsettings.xml ${D}/home/root/.xbmc/userdata/
 install -m 0644 ${WORKDIR}/guisettings.xml ${D}/home/root/.xbmc/userdata/
+install -m 0644 ${WORKDIR}/splash.logo ${D}/etc
 ln -s /var/volatile ${D}/home/root/.xbmc/temp
 install -d ${D}/usr/
 install -d ${D}/usr/bin/
@@ -32,4 +34,4 @@ install -m 0755 ${WORKDIR}/get_dvb_firmware ${D}/usr/bin/
 }
 
 
-FILES_${PN} += "/home/root /boot/"
+FILES_${PN} += "/home/root /boot/ "

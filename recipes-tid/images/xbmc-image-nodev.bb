@@ -26,6 +26,7 @@ IMAGE_INSTALL += " \
     util-linux-agetty \
     lirc \ 
     wget \
+    i2c-tools \
     samba \
     e2fsprogs \
     smbnetfs \
@@ -34,6 +35,7 @@ IMAGE_INSTALL += " \
     parted \
     strace \
     tvheadend \
+    cpufrequtils \
     python-cheetah \
     python-pyopenssl \
     python-multiprocessing \

@@ -18,8 +18,8 @@ do_deploy_append_mx6 () {
     install -d ${DEPLOYDIR}
     install ${WORKDIR}/bootscript-${MACHINE} \
             ${DEPLOYDIR}/bootscript-${MACHINE} 
-    install ${WORKDIR}/uEnv.txt \
-            ${DEPLOYDIR}/uEnv.txt
+    install ${WORKDIR}/env.txt \
+            ${DEPLOYDIR}/env.txt
 }
 
 addtask deploy after do_install 

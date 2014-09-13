@@ -8,7 +8,7 @@ EXTRA_IMAGE_FEATURES += " \
     ${SOC_EXTRA_IMAGE_FEATURES} \
 "
 #networkmanager 
-BOOTSCRIPTS="uEnv.txt"
+BOOTSCRIPTS="env.txt"
 
 #   systemd-analyze 
 #    xserver-xorg 
@@ -16,64 +16,84 @@ BOOTSCRIPTS="uEnv.txt"
 #   xserver-xorg-fbdev 
 #    xf86-video-imxfb-vivante 
 #   xfce4-session 
-IMAGE_INSTALL += " \
-    systemd-serialgetty \
-    systemd-analyze \
-    dietsplash \
-    util-linux-agetty \
-    run-postinsts \
+CONSOLETOOLS += " \ 
+    lzop \
+    i2c-tools \
+    cpufrequtils \
     net-tools \
-    lirc \ 
     wget \
-    samba \
-    e2fsprogs \
     smbnetfs \
-    libbluray \
-    watchdog \
-    parted \
     strace \
-    gdb \
-    tvheadend \
-    python-cheetah \
-    python-pyopenssl \
-    python-multiprocessing \
-    python-unixadmin \
-    gst-fsl-plugin \
-    par2cmdline \
-    transmission \
-    unrar \
-    dropbear \
-    nzbget \
-    sabnzbd \
-    sickbeard-git \
-    mariadb-client \
-    connman \
-    python-pprint \
-    dbus \
-    xbmc \
-    xbmc-nm-addon \
-    procps \
-    util-linux-mount \
-    libntfs-3g \
-    ntfsprogs \
-    ntfs-3g \
-    util-linux \
-    firmware-imx-vpu-imx6d \
-    fsl-rc-local \
-    xbmc-image-custom-rfs \
-    python-distutils \
-    packagegroup-core-sdk \
     joe \
     nano \
     rsync \
     ethtool \
+    git \
+    "
+
+DEVTOOLS += " \
+    gdb \
+    packagegroup-core-sdk \
+    python-distutils \
+    "
+
+SYSTEMTOOLS += " \
+    connman \
+    systemd-serialgetty \
+    systemd-analyze \
     samba \
-    transmission \
+    watchdog \
+    parted \
+    dropbear \
     xz \
     gnupg \
     screen \
     iw \
     iproute2 \
-    git \
-"
+    e2fsprogs \
+    par2cmdline \
+    unrar \
+    python-cheetah \
+    python-pprint \
+    mariadb-client \
+    procps \
+    "
+
+DAEMONS += " \
+    python-pyopenssl \
+    python-multiprocessing \
+    python-unixadmin \
+    lirc \ 
+    tvheadend \
+    transmission \
+    nzbget \
+    sabnzbd \
+    sickbeard-git \
+    util-linux-mount \
+    libntfs-3g \
+    ntfsprogs \
+    ntfs-3g \
+    util-linux \
+    transmission \
+    "    
+
+XBMC += " \
+     libbluray \
+     gst-fsl-plugin \
+     xbmc \
+     xbmc-nm-addon \
+     xbmc-image-custom-rfs \
+     " 
+#    run-postinsts 
+#    util-linux-agetty 
+#    firmware-imx-vpu-imx6d 
+
+IMAGE_INSTALL += "${DAEMONS} \
+                 ${SYSTEMTOOLS} \
+                 ${DEVTOOLS} \ 
+                 ${CONSOLETOOLS} \
+                 ${XBMC} \
+                 "
+
+
 export IMAGE_BASENAME = "xbmc-image-full"

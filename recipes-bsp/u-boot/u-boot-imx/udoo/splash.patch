@@ -1,27 +1,159 @@
-diff -ura git.orig/include/configs/udoo.h git/include/configs/udoo.h
---- git.orig/include/configs/udoo.h	2014-08-24 14:20:44.015133551 +0200
-+++ git/include/configs/udoo.h	2014-08-24 14:23:26.618233886 +0200
-@@ -17,6 +17,22 @@
- #define CONFIG_MX6
- #define CONFIG_DISPLAY_CPUINFO
- #define CONFIG_DISPLAY_BOARDINFO
-+#define CONFIG_CONSOLE_DEV              "ttymxc0"
-+#define CONFIG_MMCROOT                  "/dev/mmcblk1p2"
-+#define CONFIG_DEFAULT_FDT_FILE "imx6q-udoo.dtb"
+diff --git a/board/udoo/udoo.c b/board/udoo/udoo.c
+index e9236d4..8c3c3d3 100644
+--- a/board/udoo/udoo.c
++++ b/board/udoo/udoo.c
+@@ -23,6 +23,12 @@
+ #include <micrel.h>
+ #include <miiphy.h>
+ #include <netdev.h>
++#include <asm/arch/mxc_hdmi.h>
++#include <asm/arch/crm_regs.h>
++#include <linux/fb.h>
++#include <ipu_pixfmt.h>
++#include <asm/io.h>
++#include <asm/arch/sys_proto.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+@@ -40,6 +46,68 @@ DECLARE_GLOBAL_DATA_PTR;
+ #define WDT_EN		IMX_GPIO_NR(5, 4)
+ #define WDT_TRG		IMX_GPIO_NR(3, 19)
+ 
++
++#if defined(CONFIG_VIDEO_IPUV3)
++static struct fb_videomode const hdmi = {
++       .name           = "HDMI",
++       .refresh        = 60,
++       .xres           = 1024,
++       .yres           = 768,
++       .pixclock       = 15385,
++       .left_margin    = 220,
++       .right_margin   = 40,
++       .upper_margin   = 21,
++       .lower_margin   = 7,
++       .hsync_len      = 60,
++       .vsync_len      = 10,
++       .sync           = FB_SYNC_EXT,
++       .vmode          = FB_VMODE_NONINTERLACED
++};
++
++int board_video_skip(void)
++{
++       int ret;
++
++       ret = ipuv3_fb_init(&hdmi, 0, IPU_PIX_FMT_RGB24);
++
++       if (ret)
++               printf("HDMI cannot be configured: %d\n", ret);
++
++       imx_enable_hdmi_phy();
++       return ret;
++}
++
++static void setup_display(void)
++{
++       struct mxc_ccm_reg *mxc_ccm = (struct mxc_ccm_reg *)CCM_BASE_ADDR;
++       int reg;
++
++       enable_ipu_clock();
++       imx_setup_hdmi();
++
++       reg = readl(&mxc_ccm->chsccdr);
++       reg |= (CHSCCDR_CLK_SEL_LDB_DI0
++               << MXC_CCM_CHSCCDR_IPU1_DI0_CLK_SEL_OFFSET);
++       writel(reg, &mxc_ccm->chsccdr);
++}
++#endif /* CONFIG_VIDEO_IPUV3 */
++
++/*
++ * Do not overwrite the console
++ * Use always serial for U-Boot console
++ */
++int overwrite_console(void)
++{
++       return 1;
++}
++
++
++
++
++
++
++
++
+ int dram_init(void)
+ {
+ 	gd->ram_size = (phys_size_t)CONFIG_DDR_MB * 1024 * 1024;
+@@ -223,7 +291,9 @@ int board_early_init_f(void)
+ {
+ 	setup_iomux_wdog();
+ 	setup_iomux_uart();
+-
++#if defined(CONFIG_VIDEO_IPUV3)
++       setup_display();
++#endif
+ 	return 0;
+ }
+ 
+diff --git a/include/configs/udoo.h b/include/configs/udoo.h
+index 700e9c1..4a3e65f 100644
+--- a/include/configs/udoo.h
++++ b/include/configs/udoo.h
+@@ -33,6 +33,7 @@
+ 
+ #define CONFIG_BOARD_EARLY_INIT_F
+ #define CONFIG_MXC_GPIO
 +#define CONFIG_SPLASH_SCREEN
+ 
+ #define CONFIG_MXC_UART
+ #define CONFIG_MXC_UART_BASE		UART2_BASE
+@@ -102,7 +103,7 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"script=boot.scr\0" \
+-	"image=zImage\0" \
++	"image=Image\0" \
+ 	"console=ttymxc1\0" \
+ 	"splashpos=m,m\0" \
+ 	"fdt_high=0xffffffff\0" \
+@@ -140,16 +141,16 @@
+ 		"run mmcargs; " \
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"if run loadfdt; then " \
+-				"bootz ${loadaddr} - ${fdt_addr}; " \
++				"bootm ${loadaddr} - ${fdt_addr}; " \
+ 			"else " \
+ 				"if test ${boot_fdt} = try; then " \
+-					"bootz; " \
++					"bootm; " \
+ 				"else " \
+ 					"echo WARN: Cannot load the DT; " \
+ 				"fi; " \
+ 			"fi; " \
+ 		"else " \
+-			"bootz; " \
++			"bootm; " \
+ 		"fi;\0" \
+ 	"netargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=/dev/nfs " \
+@@ -233,4 +234,20 @@
+ #define CONFIG_CMD_CACHE
+ #endif
+ 
++/* Framebuffer */
 +#define CONFIG_VIDEO
 +#define CONFIG_VIDEO_IPUV3
 +#define CONFIG_CFB_CONSOLE
 +#define CONFIG_VGA_AS_SINGLE_DEVICE
 +#define CONFIG_SYS_CONSOLE_IS_IN_ENV
++#define CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE
 +#define CONFIG_VIDEO_BMP_RLE8
++#define CONFIG_SPLASH_SCREEN
 +#define CONFIG_SPLASH_SCREEN_ALIGN
 +#define CONFIG_BMP_16BPP
 +#define CONFIG_VIDEO_LOGO
 +#define CONFIG_VIDEO_BMP_LOGO
 +#define CONFIG_IPUV3_CLK 260000000
 +#define CONFIG_IMX_HDMI
-
- 
- #define MACH_TYPE_UDOO		4800
- #define CONFIG_MACH_TYPE	MACH_TYPE_UDOO
++
+ #endif			       /* __CONFIG_H * */

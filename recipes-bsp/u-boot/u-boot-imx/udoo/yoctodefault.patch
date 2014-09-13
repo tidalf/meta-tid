@@ -1,0 +1,43 @@
+diff --git a/include/configs/udoo.h b/include/configs/udoo.h
+index 07151f6..c26eb80 100644
+--- a/include/configs/udoo.h
++++ b/include/configs/udoo.h
+@@ -125,19 +125,20 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"script=boot.scr\0" \
+-	"uimage=/boot/uImage\0" \
++	"uimage=uImage\0" \
+ 	"console=ttymxc1\0" \
+ 	"splashpos=m,m\0" \
+ 	"fdt_high=0xffffffff\0" \
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+-	"fdt_addr=0x11000000\0" \
++	"fdt_addr=0x12000000\0" \
+ 	"boot_fdt=try\0" \
+ 	"ip_dyn=yes\0" \
+ 	"hdmi_patch=\0" \
+ 	"mmcdev=0\0" \
+ 	"mmcpart=1\0" \
+-	"mmcroot=/dev/mmcblk0p1 rootwait rw\0" \
++        "loadaddr=0x10800000\0" \
++	"mmcroot=/dev/mmcblk0p2 rootwait rw\0" \
+ 	"update_sd_firmware_filename=u-boot.imx\0" \
+ 	"update_sd_firmware=" \
+ 	 "if test ${ip_dyn} = yes; then " \
+@@ -157,11 +158,11 @@
+ 	 "${hdmi_patch} " \
+ 	 "fbmem=24M video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32\0" \
+ 	"loadbootscript=" \
+-	 "ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++	 "fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; " \
+ 	 "source\0" \
+-	"loaduimage=ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+-	"loadfdt=ext2load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
++	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
++	"loadfdt=run loaduimage; fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 	 "run mmcargs; " \
+ 	 "if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \

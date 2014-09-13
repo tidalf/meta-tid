@@ -1,0 +1,10 @@
+[Unit]
+Description=Splash
+DefaultDependencies=false
+
+[Service]
+Type=oneshot
+ExecStart=/bin/dd if=/etc/splash.logo of=/dev/fb0 bs=8294400 count=1 
+
+[Install]
+WantedBy=multi-user.target

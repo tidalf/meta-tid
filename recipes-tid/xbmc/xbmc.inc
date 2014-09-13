@@ -10,8 +10,9 @@ INC_PR = "r1"
 # file://vp8ts.patch 
 #           file://xbmc-999.91-PR5202.patch 
 # SRC_URI = "git://github.com/xbmc-imx6/xbmc.git;branch=master-pr 
-SRC_URI = "git://github.com/xbmc-imx6/xbmc.git;branch=gotham13.2final \
+SRC_URI = "git://github.com/xbmc-imx6/xbmc.git \
            file://xbmc.service \
+           file://splash.service \
            "
 S = "${WORKDIR}/git"
 
@@ -48,10 +49,11 @@ do_install_append() {
                  install -d ${D}${systemd_unitdir}/system
                  install -d ${D}${sysconfdir}/systemd/system/multi-user.wants
                  install -m 0644 ${WORKDIR}/xbmc.service ${D}${systemd_unitdir}/system
+                 install -m 0644 ${WORKDIR}/splash.service ${D}${systemd_unitdir}/system
 }
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = "xbmc.service"
+SYSTEMD_SERVICE_${PN} = "xbmc.service splash.service"
 
 # FILES_${PN} += "/lib/systemd/system/xbmc.service"
 
