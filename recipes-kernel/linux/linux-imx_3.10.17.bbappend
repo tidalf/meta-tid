@@ -1,5 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
+# INITRAMFS_IMAGE = "x-initramfs-image"
+# INITRAMFS_TASK = "${INITRAMFS_IMAGE}:do_rootfs"
+
 SRC_URI += " file://de58ed5cec519c4ba42b692e3127a3b418c3d7e6.patch \
 file://d3797bdf646e8d53b711c555d29ad4d0066939d5.patch \
 file://c7db7e468617822adcbfe287c06a48d894f47847.patch \
