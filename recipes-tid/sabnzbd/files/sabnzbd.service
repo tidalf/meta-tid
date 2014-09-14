@@ -1,0 +1,12 @@
+[Unit]
+Description=Sabnzbd
+Requires=dbus.service
+After=network.service
+
+[Service]
+# ExecStartPre=/usr/bin/waitformysql.sh
+ExecStart=/usr/lib/sabnzbd/SABnzbd.py -s *:8085
+Environment=HOME=/home/root
+
+[Install]
+WantedBy=multi-user.target

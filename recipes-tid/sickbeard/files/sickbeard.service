@@ -1,0 +1,12 @@
+[Unit]
+Description=Sickbeard
+Requires=dbus.service
+After=network.service
+
+[Service]
+ExecStart=/usr/lib/sickbeard-git/SickBeard.py --nolaunch -q
+Environment=HOME=/home/root
+
+[Install]
+WantedBy=multi-user.target
+

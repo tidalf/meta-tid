@@ -9,8 +9,30 @@ SRC_URI[sha256sum] = "abd73a449936740e99d3a05eb89b9381dc188ef696904f585463bc2807
 
 S = "${WORKDIR}/CherryPy-${PV}"
 
-inherit distutils 
+inherit setuptools
 
 RDEPENDS_${PN}_class-native = ""
+
+FILES_${PN} += "/usr/share/cherrypy/favicon.ico \
+  /usr/share/cherrypy/LICENSE.txt \
+  /usr/share/cherrypy/cherryd \
+  /usr/share/cherrypy/process \
+  /usr/share/cherrypy/scaffold \
+  /usr/share/cherrypy/tutorial \
+  /usr/share/cherrypy/test \
+  /usr/share/cherrypy/scaffold/site.conf \
+  /usr/share/cherrypy/scaffold/example.conf \
+  /usr/share/cherrypy/scaffold/static \
+  /usr/share/cherrypy/scaffold/static/made_with_cherrypy_small.png \
+  /usr/share/cherrypy/tutorial/custom_error.html \
+  /usr/share/cherrypy/tutorial/tutorial.conf \
+  /usr/share/cherrypy/tutorial/pdf_file.pdf \
+  /usr/share/cherrypy/tutorial/README.txt \
+  /usr/share/cherrypy/test/style.css \
+  /usr/share/cherrypy/test/test.pem \
+  /usr/share/cherrypy/test/static \
+  /usr/share/cherrypy/test/static/dirback.jpg \
+  /usr/share/cherrypy/test/static/index.html \
+  "
 
 BBCLASSEXTEND = "native nativesdk"

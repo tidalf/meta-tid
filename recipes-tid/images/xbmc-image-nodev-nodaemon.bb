@@ -8,11 +8,13 @@ SOC_EXTRA_IMAGE_FEATURES=""
 EXTRA_IMAGE_FEATURES += " \
     ${SOC_EXTRA_IMAGE_FEATURES} \
 "
-#networkmanager 
+#    read-only-rootfs 
+
 BOOTSCRIPTS="uEnv.txt"
 
-IMAGE_INSTALL += "${DAEMONS} \
+IMAGE_INSTALL += " \
                  ${SYSTEMTOOLS} \
                  ${XBMC} \
                  "
-export IMAGE_BASENAME = "xbmc-image-nodev"
+
+export IMAGE_BASENAME = "xbmc-image-nothing"

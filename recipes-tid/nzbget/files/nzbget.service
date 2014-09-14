@@ -1,0 +1,12 @@
+[Unit]
+Description=Nzbget
+Requires=dbus.service
+After=network.service
+
+[Service]
+Type=fork
+ExecStart=/usr/bin/nzbget -D -c /usr/share/nzbget/webui/nzbget.conf
+Environment=HOME=/home/root
+
+[Install]
+WantedBy=multi-user.target

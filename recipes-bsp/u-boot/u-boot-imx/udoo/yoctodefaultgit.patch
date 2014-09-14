@@ -1,0 +1,54 @@
+diff --git a/include/configs/udoo.h b/include/configs/udoo.h
+index 700e9c1..ed5214e 100644
+--- a/include/configs/udoo.h
++++ b/include/configs/udoo.h
+@@ -102,13 +102,13 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"script=boot.scr\0" \
+-	"image=zImage\0" \
++	"image=uImage\0" \
+ 	"console=ttymxc1\0" \
+ 	"splashpos=m,m\0" \
+ 	"fdt_high=0xffffffff\0" \
+ 	"initrd_high=0xffffffff\0" \
+ 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+-	"fdt_addr=0x18000000\0" \
++	"fdt_addr=0x12000000\0" \
+ 	"boot_fdt=try\0" \
+ 	"ip_dyn=yes\0" \
+ 	"mmcdev=0\0" \
+@@ -129,7 +129,8 @@
+ 			"fi; "	\
+ 		"fi\0" \
+ 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-		"root=${mmcroot}\0" \
++		"root=${mmcroot} " \
++		"video=mxcfb0:dev=hdmi,1920x1080M@60,if=RGB24,bpp=32 consoleblank=0 dmfc=3 fbmem=24M,10M\0" \
+ 	"loadbootscript=" \
+ 		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; " \
+@@ -137,19 +138,19 @@
+ 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+ 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+-		"run mmcargs; " \
++		"setenv loadaddr 0x10800000; run loadimage ; run mmcargs; " \
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"if run loadfdt; then " \
+-				"bootz ${loadaddr} - ${fdt_addr}; " \
++				"bootm 0x10800000 - ${fdt_addr}; " \
+ 			"else " \
+ 				"if test ${boot_fdt} = try; then " \
+-					"bootz; " \
++					"bootm; " \
+ 				"else " \
+ 					"echo WARN: Cannot load the DT; " \
+ 				"fi; " \
+ 			"fi; " \
+ 		"else " \
+-			"bootz; " \
++			"bootm; " \
+ 		"fi;\0" \
+ 	"netargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=/dev/nfs " \

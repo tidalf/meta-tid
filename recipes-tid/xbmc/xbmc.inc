@@ -66,6 +66,7 @@ RDEPENDS_${PN} = " python-stringold \
                    python-threading \
                    python-elementtree \
                    python-xml \
+                   python-pprint \
                    python-dbus \
                    python-html \
                    python-netserver \
@@ -80,6 +81,7 @@ RDEPENDS_${PN} = " python-stringold \
                    python-audio \
                    python-email \
                    python-numbers \
+		   libbluray \
                    python-json \
                    python-subprocess \
                    python-xmlrpc \

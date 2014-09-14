@@ -3,7 +3,6 @@ Description=Transmission BitTorrent Daemon
 After=network.target
 
 [Service]
-User=transmission
 Type=simple
 ExecStart=/usr/bin/transmission-daemon -g /etc/transmission-daemon -f --log-error
 ExecReload=/bin/kill -s HUP $MAINPID
