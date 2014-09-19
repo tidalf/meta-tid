@@ -10,21 +10,12 @@
 # bits.
 #
 # By default this script does nothing.
-NetworkManager &
-# echo 132 > /sys/class/gpio/export && echo 83 > /sys/class/gpio/export
-# echo out > /sys/class/gpio/gpio132/direction && echo 1 > /sys/class/gpio/gpio132/value
-# /usr/bin/wd &
+
+/usr/sbin/NetworkManager
 echo 0 >  /sys/class/graphics/fbcon/cursor_blink
-echo 131072 >/proc/sys/vm/min_free_kbytes
+mkdir /tmp/temp
 export HOME=/home/root
-sleep 1
-# /usr/bin/usynergy &  
+#sleep 2
+#/usr/bin/usynergy &  
 # /usr/bin/tvheadend -l /dev/null &
 /imx6/xbmc/lib/xbmc/xbmc.bin 2> /dev/null &
-irexec -d
-sleep 10
-transmission-daemon -g /etc/transmission-daemon
-# /usr/lib/sickbeard-git/SickBeard.py -d
-nzbgetd start
-
-exit 0

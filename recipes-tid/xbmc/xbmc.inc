@@ -2,8 +2,8 @@ DESCRIPTION = "software media player and entertainment hub"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://copying.txt;md5=4cea88e622381d1ad6e43f07c47513b5"
-DEPENDS = "mysql5 libsamplerate0 alsa-lib udev libvorbis boost libass mpeg2dec libmad libmodplug tiff yajl libtinyxml taglib libcdio jasper libmicrohttpd libssh rtmpdump libnfs samba swig-native libxslt libplist shairplay flac pulseaudio"
-DEPENDS_append_mx6 = " virtual/kernel virtual/libgles2 virtual/egl libfslvpuwrap libcec"
+DEPENDS = "mysql5 libsamplerate0 alsa-lib udev libvorbis boost libass libmad libmodplug tiff yajl libtinyxml taglib libcdio jasper libmicrohttpd libssh rtmpdump libnfs samba swig-native libxslt libplist shairplay flac pulseaudio "
+DEPENDS_append_mx6 = " virtual/kernel virtual/libgles2 virtual/egl libfslvpuwrap "
 
 INC_PR = "r1"
 
@@ -93,13 +93,10 @@ RDEPENDS_${PN} = " python-stringold \
                    upower \
                    libmad \
                    libass \
-                   mpeg2dec \
-                   libcec \
                    kernel \
                    eglibc-gconv-ibm850 \
                    eglibc-gconv-utf-32 \
                    jasper \
-                   libcec \
                    udev \
                    alsa-lib \
                    alsa-conf \

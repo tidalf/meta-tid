@@ -1,5 +1,5 @@
 diff --git a/include/configs/udoo.h b/include/configs/udoo.h
-index 07151f6..4320bc2 100644
+index 07151f6..c26eb80 100644
 --- a/include/configs/udoo.h
 +++ b/include/configs/udoo.h
 @@ -125,19 +125,20 @@
@@ -26,12 +26,9 @@ index 07151f6..4320bc2 100644
  	"update_sd_firmware_filename=u-boot.imx\0" \
  	"update_sd_firmware=" \
  	 "if test ${ip_dyn} = yes; then " \
-@@ -155,13 +156,13 @@
- 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
- 	 "root=${mmcroot} " \
+@@ -157,11 +158,11 @@
  	 "${hdmi_patch} " \
--	 "fbmem=24M video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32\0" \
-+	 "fbmem=24M video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32 consoleblank=0 dmfc=3\0" \
+ 	 "fbmem=24M video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32\0" \
  	"loadbootscript=" \
 -	 "ext2load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 +	 "fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \

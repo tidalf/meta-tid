@@ -21,6 +21,7 @@ DEVTOOLS += " \
     gdb \
     packagegroup-core-sdk \
     python-distutils \
+    mariadb-client \
     gst-fsl-plugin \
     "
 #    systemd-serialgetty 
@@ -28,7 +29,6 @@ DEVTOOLS += " \
 SYSTEMTOOLS += " \
     networkmanager \
     parted \
-    mariadb-client \
     watchdog \
     dropbear \
     e2fsprogs \

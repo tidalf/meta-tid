@@ -19,11 +19,12 @@ DEVTOOLS += " \
     python-distutils \
     gst-fsl-plugin \
     "
+#    systemd-serialgetty 
+#    systemd-analyze 
 
 SYSTEMTOOLS += " \
+    fsl-rc-local \
     connman \
-    systemd-serialgetty \
-    systemd-analyze \
     watchdog \
     parted \
     dropbear \
