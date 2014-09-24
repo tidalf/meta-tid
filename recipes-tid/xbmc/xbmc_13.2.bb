@@ -7,26 +7,129 @@ HOMEPAGE = "http://xbmc.org/"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://LICENSE.GPL;md5=6eb631b6da7fdb01508a80213ffc35ff"
 
-DEPENDS = "yajl libxmu fribidi mpeg2dec curl python libmodplug libmicrohttpd \
+DEPENDS = "yajl fribidi mpeg2dec curl python libmodplug libmicrohttpd \
            sqlite3 libcdio libpcre boost lzo taglib libtinyxml jasper libass \
            libmad jpeg libsamplerate0 libvorbis tiff libxslt libgpg-error \
-           libsdl virtual/egl swig-native gperf-native unzip-native zip-native \
-           libcec rtmpdump"
+           virtual/egl swig-native gperf-native unzip-native zip-native \
+           libcec rtmpdump ffmpeg libbluray python-stringold \
+                   python-mime \
+                   python-logging \
+                   python-crypt \
+                   python-netclient \
+                   python-threading \
+                   python-elementtree \
+                   python-xml \
+                   python-dbus \
+                   python-html \
+                   python-netserver \
+                   python-zlib \
+                   python-sqlite3 \
+                   python-pydoc \
+                   python-textutils \
+                   python-shell \
+                   python-image \
+                   python-robotparser \
+                   python-compression \
+                   python-audio \
+                   python-pprint \
+                   python-email \
+                   python-numbers \
+                   python-subprocess \
+                   python-xmlrpc \
+		   " 
+
+# XBMC plugins requires python modules and dynamically loaded libraries
+RDEPENDS_${PN} = " python-stringold \
+                   python-mime \
+                   python-logging \
+                   python-crypt \
+                   python-netclient \
+                   python-threading \
+                   python-elementtree \
+                   python-xml \
+                   python-dbus \
+                   python-html \
+                   python-netserver \
+                   python-zlib \
+                   python-sqlite3 \
+                   python-pydoc \
+                   python-textutils \
+                   python-shell \
+                   python-image \
+                   python-robotparser \
+                   python-compression \ 
+                   python-audio \
+                   python-pprint \
+                   python-email \
+                   python-numbers \
+                   python-json \
+                   python-subprocess \
+                   python-xmlrpc \
+                   eglibc-gconv-cp1252 \
+                   libcurl \
+                   libnfs \
+                   rtmpdump \
+                   upower \
+                   libmad \
+                   libass \
+                   mpeg2dec \
+                   libcec \
+                   kernel \
+                   eglibc-gconv-ibm850 \
+                   eglibc-gconv-utf-32 \
+                   jasper \
+                   libcec \
+                   udev \
+                   alsa-lib \
+                   alsa-conf \
+                   tzdata \
+                   xbmc-pvr-addons \
+                   shairplay \
+                   libvorbis \
+                   flac \
+                   libbluray \
+                 "
+
+
+
 
 DEPENDS_append_arm = " cmake-native"
 DEPENDS_append_x86 = " nasm-native"
+DEPENDS_append_mx6 = " virtual/kernel virtual/libgles2 virtual/egl libfslvpuwrap "
 
-CODENAME = "Gotham"
-SRCREV = "0f3db0516711e05765d297d060563730131c2f92"
+CODENAME = "master"
+SRCREV = "2f561a29836b78e487d59bb89f58046f38121590"
 SRC_URI = "git://github.com/xbmc/xbmc.git;branch=${CODENAME} \
-           file://0001-configure-don-t-run-python-distutils-to-find-STAGING.patch \
-           file://0002-Revert-fixed-ios-Add-memory-barriers-to-atomic-Add-S.patch \
-           file://0003-Revert-fixed-ios-Add-memory-barriers-to-cas-assembly.patch \
-           file://0004-Support-for-novfpnoneon-platforms.patch"
+           file://ffwtf.patch \ 
+           file://xbmc.service \
+           file://splash.service"
 
-inherit autotools-brokensep gettext python-dir
+# file://0003-Revert-fixed-ios-Add-memory-barriers-to-cas-assembly.patch
+# file://0002-Revert-fixed-ios-Add-memory-barriers-to-atomic-Add-S.patch 
+# file://0001-configure-don-t-run-python-distutils-to-find-STAGING.patch 
+
+#           file://0004-Support-for-novfpnoneon-platforms.patch
+
+#           file://xbmc-999.91-PR5202.patch 
+
 
 S = "${WORKDIR}/git"
+
+CPPFLAGS += " -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include "
+CXXFLAGS += " -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include "
+CFLAGS += " -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include "
+
+inherit autotools-brokensep gettext python-dir systemd
+
+do_install_append() { 
+                 install -d ${D}${systemd_unitdir}/system
+                 install -d ${D}${sysconfdir}/systemd/system/multi-user.wants
+                 install -m 0644 ${WORKDIR}/xbmc.service ${D}${systemd_unitdir}/system
+                 install -m 0644 ${WORKDIR}/splash.service ${D}${systemd_unitdir}/system
+}
+
+SYSTEMD_PACKAGES = "${PN}"
+SYSTEMD_SERVICE_${PN} = "xbmc.service splash.service"
 
 # Don't activate texturepacker as it needs libsdl-image-native. Due to some issues
 # with qemu we use the host's libsdl on which libsdl-image-native depends.
@@ -34,9 +137,9 @@ PACKAGECONFIG ??= "${@base_contains('DISTRO_FEATURES', 'opengl', 'opengl', 'open
                    sdl airplay ssh libusb libcec samba mysql avahi xrandr x11 joystick \
                    mid rtmp libmp3lame optical-drive debug"
 
-PACKAGECONFIG[opengl] = "--enable-gl,--enable-gles,glew"
+# PACKAGECONFIG[opengl] = "--enable-gl,--enable-gles,glew"
 PACKAGECONFIG[opengles2] = "--enable-gles,--enable-gl,"
-PACKAGECONFIG[sdl] = "--enable-sdl,--disable-sdl,libsdl-mixer libsdl-image"
+#PACKAGECONFIG[sdl] = "--enable-sdl,--disable-sdl,libsdl-mixer libsdl-image"
 PACKAGECONFIG[airplay] = "--enable-airplay,--disable-airplay,libplist"
 PACKAGECONFIG[ssh] = "--enable-ssh,--disable-ssh,libssh"
 PACKAGECONFIG[libcec] = "--enable-libcec,--disable-libcec,libcec"
@@ -44,8 +147,8 @@ PACKAGECONFIG[libusb] = "--enable-libusb,--disable-libusb,libusb"
 PACKAGECONFIG[samba] = "--enable-samba,--disable-samba,samba"
 PACKAGECONFIG[mysql] = "--enable-mysql,--disable-mysql,mysql5"
 PACKAGECONFIG[avahi] = "--enable-avahi,--disable-avahi,avahi"
-PACKAGECONFIG[xrandr] = "--enable-xrandr,--disable-xrandr,libxrandr"
-PACKAGECONFIG[x11] = "--enable-x11,--disable-x11,"
+# PACKAGECONFIG[xrandr] = "--enable-xrandr,--disable-xrandr,libxrandr"
+# PACKAGECONFIG[x11] = "--enable-x11,--disable-x11,"
 PACKAGECONFIG[joystick] = "--enable-joystick,--disable-joystick,"
 PACKAGECONFIG[texturepacker] = "--enable-texturepacker,--disable-texturepacker,libsdl-image-native"
 PACKAGECONFIG[mid] = "--enable-mid,--disable-mid,"
@@ -58,10 +161,17 @@ PACKAGECONFIG[debug] = "--enable-debug,--disable-debug,"
 EXTRA_OECONF_append_armv4 = " --with-platform=novfpnoneon "
 EXTRA_OECONF_append_armv5 = " --with-platform=novfpnoneon "
 
+#    --enable-external-libraries 
+
 EXTRA_OECONF_append = " \
     --disable-rxsx \
-    --enable-external-libraries \
     --with-arch=${TARGET_ARCH} \
+    --enable-external-libraries \
+    --enable-libbluray \
+    --disable-gl \
+    --disable-x11 \
+    --enable-gles \
+    --enable-codec=imxvpu --disable-debug --disable-texturepacker --enable-airplay --enable-airtunes \
     "
 
 FULL_OPTIMIZATION_armv7a = "-fexpensive-optimizations -fomit-frame-pointer -O4 -ffast-math"
@@ -90,6 +200,11 @@ do_configure_prepend_arm() {
     sed -i '/FEH.py/ s/$/ --no-test/' ${S}/tools/Linux/xbmc.sh.in
 }
 
+do_qa_configure() { 
+  echo kapoue 
+}	
+
+
 FILES_${PN} += " \
     ${datadir}/xsessions \
     ${datadir}/icons"
@@ -108,10 +223,10 @@ RRECOMMENDS_${PN}_append = " \
     libcec \
     libcurl \
     ${@base_contains('DISTRO_FEATURES', 'x11', 'xdpyinfo', '', d)} \
-    ${@base_contains('DISTRO_FEATURES', 'opengl', 'mesa-demos', '', d)} \
     python python-stringold python-codecs python-re python-lang python-netclient\
     "
-
+#  ${@base_contains('DISTRO_FEATURES', 'opengl', 'mesa-demos', '', d)}
+  
 RRECOMMENDS_${PN}_append_libc-glibc = " \
     glibc-charmap-ibm850 glibc-charmap-utf-8 \
     glibc-gconv-ibm85 glibc-gconv-utf-32 \

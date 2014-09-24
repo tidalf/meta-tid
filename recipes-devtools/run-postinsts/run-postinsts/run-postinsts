@@ -88,8 +88,8 @@ if [ $remove_pi_dir = 1 ]; then
 	remove_rcsd_link
 fi
 
-
-echo -e "n\np\n4\n\n\nnp\np\n3\n\n\nw" | fdisk /dev/mmcblk0
+# dirty hack use full sd for /home/root
+echo -e "n\np\n4\n\n\nn\np\n3\n\n\nw" | fdisk /dev/mmcblk0
 partprobe
 mkfs.ext4 /dev/mmcblk0p3
 # killall xbmc.bin
@@ -98,3 +98,5 @@ mkdir /home/root
 echo "/dev/mmcblk0p3       /home/root           ext4       defaults              0  0" >> /etc/fstab
 mount -a
 cp -a /home/root.orig/.* /home/root
+
+exit 0

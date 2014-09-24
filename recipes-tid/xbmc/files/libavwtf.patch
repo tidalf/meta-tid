@@ -1,0 +1,178 @@
+diff --git a/configure.in b/configure.in
+index 490b12b..2ba4a58 100644
+--- a/configure.in
++++ b/configure.in
+@@ -1659,13 +1659,12 @@ else
+ fi
+ 
+ # FFmpeg
+-FFMPEG_LIBNAMES="libavcodec >= 56.1.100
+-                 libavfilter >= 5.1.100
+-                 libavformat >= 56.4.101
+-                 libavutil >= 54.7.100
+-                 libpostproc >= 53.0.100
+-                 libswscale >= 3.0.100
+-                 libswresample >= 1.1.100"
++FFMPEG_LIBNAMES="libavcodec >= 56.0.0
++                 libavfilter >= 5.0.0
++                 libavformat >= 56.0.0
++                 libavutil >= 54.0.100
++                 libswscale >= 3.0.0
++                 libswresample >= 1.0.0"
+ 
+ ffmpeg_build="${abs_top_srcdir}/tools/depends/target/ffmpeg"
+ FFMPEG_VER_SHA=$(grep "VERSION=" ${ffmpeg_build}/FFMPEG-VERSION | sed 's/VERSION=//g')
+diff --git a/m4/ax_python_devel.m4 b/m4/ax_python_devel.m4
+index adbd207..dee70f6 100644
+--- a/m4/ax_python_devel.m4
++++ b/m4/ax_python_devel.m4
+@@ -151,12 +151,7 @@ $ac_distutils_result])
+ 	#
+ 	AC_MSG_CHECKING([for Python include path])
+ 	if test -z "$PYTHON_CPPFLAGS"; then
+-		python_path=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_inc ());"`
+-		if test -n "${python_path}"; then
+-			python_path="-I$python_path"
+-		fi
+-		PYTHON_CPPFLAGS=$python_path
++		PYTHON_CPPFLAGS="-I${STAGING_INCDIR}/${PYTHON_DIR}"
+ 	fi
+ 	AC_MSG_RESULT([$PYTHON_CPPFLAGS])
+ 	AC_SUBST([PYTHON_CPPFLAGS])
+diff --git a/tools/Linux/xbmc.sh.in b/tools/Linux/xbmc.sh.in
+index 14a082b..e79729a 100644
+--- a/tools/Linux/xbmc.sh.in
++++ b/tools/Linux/xbmc.sh.in
+@@ -119,7 +119,7 @@ print_crash_report()
+   echo "Crash report available at $FILE"
+ }
+ 
+-python @datadir@/xbmc/FEH.py $SAVED_ARGS
++python @datadir@/xbmc/FEH.py $SAVED_ARGS --no-test --no-test --no-test --no-test
+ RET=$?
+ if [ $RET -ne 0 ]; then
+   exit $RET
+diff --git a/xbmc/threads/Atomics.cpp b/xbmc/threads/Atomics.cpp
+index 12d3e56..268e20e 100644
+--- a/xbmc/threads/Atomics.cpp
++++ b/xbmc/threads/Atomics.cpp
+@@ -43,24 +43,24 @@ long cas(volatile long *pAddr, long expectedVal, long swapVal)
+     : "cc", "memory");                              /* Clobbers */
+   return prev;
+ 
+-#elif defined(__arm__)
+-  register long prev;
+-  asm volatile (
+-    "dmb      ish            \n" // Memory barrier. Make sure all memory accesses appearing before this complete before any that appear after
+-    "1:                      \n"
+-    "ldrex    %0, [%1]       \n" // Load the current value of *pAddr(%1) into prev (%0) and lock pAddr,
+-    "cmp      %0,  %2        \n" // Verify that the current value (%0) == old value (%2)
+-    "bne      2f             \n" // Bail if the two values are not equal [not as expected]
+-    "strex    r1,  %3, [%1]  \n"
+-    "cmp      r1,  #0        \n"
+-    "bne      1b             \n"
+-    "dmb      ish            \n" // Memory barrier.
+-    "2:                      \n"
+-    : "=&r" (prev)
+-    : "r"(pAddr), "r"(expectedVal),"r"(swapVal)
+-    : "r1"
+-    );
+-  return prev;
++//#elif defined(__arm__)
++//  register long prev;
++//  asm volatile (
++//    "dmb      ish            \n" // Memory barrier. Make sure all memory accesses appearing before this complete before any that appear after
++//    "1:                      \n"
++//    "ldrex    %0, [%1]       \n" // Load the current value of *pAddr(%1) into prev (%0) and lock pAddr,
++//    "cmp      %0,  %2        \n" // Verify that the current value (%0) == old value (%2)
++//    "bne      2f             \n" // Bail if the two values are not equal [not as expected]
++//    "strex    r1,  %3, [%1]  \n"
++//    "cmp      r1,  #0        \n"
++//    "bne      1b             \n"
++//    "dmb      ish            \n" // Memory barrier.
++//    "2:                      \n"
++//    : "=&r" (prev)
++//    : "r"(pAddr), "r"(expectedVal),"r"(swapVal)
++//    : "r1"
++//    );
++//  return prev;
+ 
+ #elif defined(__mips__)
+ // TODO:
+@@ -168,14 +168,12 @@ long AtomicIncrement(volatile long* pAddr)
+ #elif defined(__arm__) && !defined(__ARM_ARCH_5__)
+   register long val;
+   asm volatile (
+-    "dmb      ish            \n" // Memory barrier. Make sure all memory accesses appearing before this complete before any that appear after
+     "1:                     \n" 
+     "ldrex   %0, [%1]       \n" // (val = *pAddr)
+     "add     %0,  #1        \n" // (val += 1)
+     "strex   r1,  %0, [%1]	\n"
+     "cmp     r1,   #0       \n"
+     "bne     1b             \n"
+-    "dmb     ish            \n" // Memory barrier.
+     : "=&r" (val)
+     : "r"(pAddr)
+     : "r1"
+@@ -246,14 +244,12 @@ long AtomicAdd(volatile long* pAddr, long amount)
+ #elif defined(__arm__) && !defined(__ARM_ARCH_5__)
+   register long val;
+   asm volatile (
+-    "dmb      ish           \n" // Memory barrier. Make sure all memory accesses appearing before this complete before any that appear after
+   "1:                       \n" 
+     "ldrex   %0, [%1]       \n" // (val = *pAddr)
+     "add     %0,  %2        \n" // (val += amount)
+     "strex   r1,  %0, [%1]	\n"
+     "cmp     r1,   #0       \n"
+     "bne     1b             \n"
+-    "dmb     ish            \n" // Memory barrier.
+     : "=&r" (val)
+     : "r"(pAddr), "r"(amount)
+     : "r1"
+@@ -324,14 +320,12 @@ long AtomicDecrement(volatile long* pAddr)
+ #elif defined(__arm__)
+   register long val;
+   asm volatile (
+-    "dmb      ish           \n" // Memory barrier. Make sure all memory accesses appearing before this complete before any that appear after
+     "1:                     \n" 
+     "ldrex   %0, [%1]       \n" // (val = *pAddr)
+     "sub     %0,  #1        \n" // (val -= 1)
+     "strex   r1,  %0, [%1]	\n"
+     "cmp     r1,   #0       \n"
+     "bne     1b             \n"
+-    "dmb     ish            \n" // Memory barrier.
+     : "=&r" (val)
+     : "r"(pAddr)
+     : "r1"
+@@ -403,14 +397,12 @@ long AtomicSubtract(volatile long* pAddr, long amount)
+ #elif defined(__arm__)
+   register long val;
+   asm volatile (
+-    "dmb     ish            \n" // Memory barrier. Make sure all memory accesses appearing before this complete before any that appear after
+     "1:                     \n" 
+     "ldrex   %0, [%1]       \n" // (val = *pAddr)
+     "sub     %0,  %2        \n" // (val -= amount)
+     "strex   r1,  %0, [%1]	\n"
+     "cmp     r1,   #0       \n"
+     "bne     1b             \n"
+-    "dmb     ish            \n" // Memory barrier.
+     : "=&r" (val)
+     : "r"(pAddr), "r"(amount)
+     : "r1"
+diff --git a/xbmc/visualizations/Goom/goom2k4-0/mkinstalldirs b/xbmc/visualizations/Goom/goom2k4-0/mkinstalldirs
+index 4191a45..55d537f 100755
+--- a/xbmc/visualizations/Goom/goom2k4-0/mkinstalldirs
++++ b/xbmc/visualizations/Goom/goom2k4-0/mkinstalldirs
+@@ -81,9 +81,9 @@ case $dirmode in
+       echo "mkdir -p -- $*"
+       exec mkdir -p -- "$@"
+     else
+-      # On NextStep and OpenStep, the `mkdir' command does not
++      # On NextStep and OpenStep, the 'mkdir' command does not
+       # recognize any option.  It will interpret all options as
+-      # directories to create, and then abort because `.' already
++      # directories to create, and then abort because '.' already
+       # exists.
+       test -d ./-p && rmdir ./-p
+       test -d ./--version && rmdir ./--version

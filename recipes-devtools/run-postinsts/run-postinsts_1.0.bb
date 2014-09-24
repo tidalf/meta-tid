@@ -27,8 +27,8 @@ do_compile () {
 do_install() {
 	install -d ${D}${sbindir}
 	install -m 0755 ${WORKDIR}/run-postinsts ${D}${sbindir}/
-
 	install -d ${D}${sysconfdir}/init.d/
+        touch ${D}${sysconfdir}/run-postinsts
 	install -m 0755 ${WORKDIR}/run-postinsts.init ${D}${sysconfdir}/init.d/run-postinsts
 
 	install -d ${D}${systemd_unitdir}/system/

@@ -7,7 +7,7 @@ DEPENDS = "libxml2"
 
 PR = "r0"
 
-SRC_URI = "git://git.videolan.org/${PN}.git;protocol=git;tag=44d9d11301cdec999f1262511df46a0a5eacee50"
+SRC_URI = "git://git.videolan.org/${PN}.git;protocol=git;tag=6bea5848c573c12134019fd32d0b68afce05c8be"
 
 S = "${WORKDIR}/git"
 

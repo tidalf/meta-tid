@@ -27,6 +27,9 @@ DEVTOOLS += " \
 #    fsl-rc-local 
 SYSTEMTOOLS += " \
     networkmanager \
+    python-core \
+    python-re \
+    python-json \
     parted \
     mariadb-client \
     watchdog \
@@ -60,4 +63,5 @@ XBMC += " \
      xbmc \
      xbmc-nm-addon \
      xbmc-image-custom-rfs \
+     libbluray \
      " 
