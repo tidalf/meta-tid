@@ -48,6 +48,35 @@ SYSTEMTOOLS += " \
     libntfs-3g \
     ntfsprogs \
     ntfs-3g \
+    yajl fribidi mpeg2dec curl python libmodplug libmicrohttpd \
+    sqlite3 libcdio libpcre boost lzo taglib libtinyxml jasper libass \
+    libmad libsamplerate0 libvorbis tiff libxslt libgpg-error \
+    swig-native gperf-native unzip-native zip-native \
+    libcec rtmpdump ffmpeg libbluray python-stringold \
+    python-mime \
+    python-logging \
+    python-crypt \
+    python-netclient \
+    python-threading \
+    python-elementtree \
+    python-xml \
+    python-dbus \
+    python-html \
+    python-netserver \
+    python-zlib \
+    python-sqlite3 \
+    python-pydoc \
+    python-textutils \
+    python-shell \
+    python-image \
+    python-robotparser \
+    python-compression \
+    python-audio \
+    python-pprint \
+    python-email \
+    python-numbers \
+    python-subprocess \
+    python-xmlrpc \
     "
 
 DAEMONS += " \
