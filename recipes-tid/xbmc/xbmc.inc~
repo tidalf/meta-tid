@@ -45,7 +45,6 @@ do_configure() {
 
 # XBMC plugins requires python modules and dynamically loaded libraries
 RDEPENDS_${PN} = " udev \
-                   pulseaudio \
                    python-stringold \
                    python-mime \
                    python-logging \

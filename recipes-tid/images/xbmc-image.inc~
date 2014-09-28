@@ -68,4 +68,6 @@ XBMC += " \
      libbluray \
      x264 \
      lirc \ 
+     shairplay \
+     udev \
      " 

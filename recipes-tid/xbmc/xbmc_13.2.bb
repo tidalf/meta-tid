@@ -7,7 +7,7 @@ HOMEPAGE = "http://xbmc.org/"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://LICENSE.GPL;md5=6eb631b6da7fdb01508a80213ffc35ff"
 
-DEPENDS = "yajl fribidi mpeg2dec curl python libmodplug libmicrohttpd \
+DEPENDS = "udev pulseaudio yajl fribidi mpeg2dec curl python libmodplug libmicrohttpd \
            sqlite3 libcdio libpcre boost lzo taglib libtinyxml jasper libass \
            libmad libsamplerate0 libvorbis tiff libxslt libgpg-error \
            swig-native gperf-native unzip-native zip-native \
@@ -36,6 +36,35 @@ DEPENDS = "yajl fribidi mpeg2dec curl python libmodplug libmicrohttpd \
                    python-numbers \
                    python-subprocess \
                    python-xmlrpc \
+                       python-compile \
+    python-compiler \
+    python-compression \
+    python-core \
+    python-curses \
+    python-datetime \
+    python-difflib \
+    python-distutils \
+    python-elementtree \
+    python-email \
+    python-fcntl \
+    python-git \
+    python-json \
+    python-logging \
+    python-mmap \
+    python-multiprocessing \
+    python-netclient \
+    python-netserver \
+    python-pickle \
+    python-pkgutil \
+    python-pprint \
+    python-re \
+    python-shell \
+    python-sqlite3 \
+    python-subprocess \
+    python-textutils \
+    python-unittest \
+    python-unixadmin \
+    python-xmlrpc \
 		   " 
 
 # XBMC plugins requires python modules and dynamically loaded libraries
@@ -65,6 +94,36 @@ RDEPENDS_${PN} = " python-stringold \
                    python-json \
                    python-subprocess \
                    python-xmlrpc \
+		       python-compile \
+    python-compiler \
+    python-compression \
+    python-core \
+    python-curses \
+    python-datetime \
+    python-difflib \
+    python-distutils \
+    python-elementtree \
+    python-email \
+    python-fcntl \
+    python-git \
+    python-json \
+    python-logging \
+    python-mmap \
+    python-multiprocessing \
+    python-netclient \
+    python-netserver \
+    python-pickle \
+    python-pkgutil \
+    python-pprint \
+    python-re \
+    python-rpm \
+    python-shell \
+    python-sqlite3 \
+    python-subprocess \
+    python-textutils \
+    python-unittest \
+    python-unixadmin \
+    python-xmlrpc \
                    eglibc-gconv-cp1252 \
                    libcurl \
                    libnfs \
