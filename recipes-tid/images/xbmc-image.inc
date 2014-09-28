@@ -66,5 +66,7 @@ XBMC += " \
      xbmc-nm-addon \
      xbmc-image-custom-rfs \
      libbluray \
+     x264 \
      lirc \ 
+     shairplay \
      " 

@@ -98,7 +98,9 @@ DEPENDS_append_x86 = " nasm-native"
 DEPENDS_append_mx6 = " virtual/kernel virtual/libgles2 virtual/egl libfslvpuwrap "
 
 CODENAME = "master"
-SRCREV = "2f561a29836b78e487d59bb89f58046f38121590"
+SRCREV = "0abf356f8d5f1108682578c4f081d4644bc6dc13"
+#SRCREV = "2f561a29836b78e487d59bb89f58046f38121590"
+
 SRC_URI = "git://github.com/xbmc/xbmc.git;branch=${CODENAME} \
            file://ffwtf.patch \ 
            file://xbmc.service \

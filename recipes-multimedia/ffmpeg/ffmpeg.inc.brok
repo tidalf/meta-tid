@@ -9,7 +9,7 @@ PROVIDES = "ffmpeg"
 
 ARM_INSTRUCTION_SET = "arm"
 
-DEPENDS = "zlib libogg libvorbis libtheora yasm-native lzma"
+DEPENDS = "zlib libogg libvorbis libtheora yasm-native lzma "
 
 INC_PR = "r8"
 
@@ -40,7 +40,7 @@ do_package_qa() {
 #    --enable-libtheora  
 
 EXTRA_OECONF = " \
-    --enable-shared \
+    --disable-shared \
     --enable-static \
     --enable-pthreads \
     --enable-gpl \
@@ -59,15 +59,41 @@ EXTRA_OECONF = " \
     --extra-ldflags="${TARGET_LDFLAGS}" \
     --sysroot="${STAGING_DIR_TARGET}" \
     --enable-hardcoded-tables \
+    --enable-pic \
     ${EXTRA_FFCONF} \
     --libdir=${libdir} \
     --shlibdir=${libdir} \
-    --enable-yasm \
-    --enable-asm \
-    --enable-pic \
-    --enable-neon \
-    --enable-hardcoded-tables \
- --disable-memalign-hack \
+    --disable-doc \ 
+    --enable-optimizations \
+    --disable-armv5te --disable-armv6t2 \
+--disable-extra-warnings \
+--disable-ffprobe \
+--disable-ffplay \
+--disable-ffserver \
+--enable-ffmpeg \
+--enable-avdevice \
+--enable-avcodec \
+--enable-avformat \
+--enable-swscale \
+--enable-postproc \
+--enable-avfilter \
+--disable-devices \
+--enable-pthreads \
+--disable-w32threads \
+--disable-x11grab \
+--enable-network \
+--disable-gnutls \
+--disable-gray \
+--enable-swscale-alpha \
+--enable-dct \
+--disable-small \
+--enable-fft \
+--enable-mdct \
+--enable-rdft \
+--disable-crystalhd \
+--disable-dxva2 \
+--enable-runtime-cpudetect \
+--disable-memalign-hack \
 --disable-encoders \
 --enable-encoder=ac3 \
 --enable-encoder=aac \
@@ -76,6 +102,7 @@ EXTRA_OECONF = " \
 --enable-hwaccels \
 --disable-muxers \
 --enable-muxer=spdif \
+--enable-neon \
 --enable-muxer=adts \
 --enable-muxer=asf \
 --enable-muxer=ipod \
@@ -113,34 +140,10 @@ EXTRA_OECONF = " \
 --enable-zlib \
 --enable-asm \
 --disable-altivec \
- --enable-optimizations \
---disable-armv5te --disable-armv6t2 \
---disable-extra-warnings \
---disable-ffprobe \
---disable-ffplay \
---disable-ffserver \
---enable-ffmpeg \
---enable-avdevice \
---enable-avcodec \
---enable-avformat \
---enable-swscale \
---enable-postproc \
---enable-avfilter \
---disable-devices \
---enable-pthreads \
---disable-w32threads \
---disable-x11grab \
---enable-network \
---disable-gray \
---enable-swscale-alpha \
---enable-dct \
---enable-fft \
---enable-mdct \
---enable-rdft \
---disable-crystalhd \
---disable-dxva2 \
---enable-runtime-cpudetect \
-"
+$FFMPEG_CPU \
+$FFMPEG_FPU \
+--enable-yasm \
+--disable-symver"
 
 do_configure() {
     # We don't have TARGET_PREFIX-pkgconfig
