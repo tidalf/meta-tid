@@ -51,7 +51,6 @@ SYSTEMTOOLS += " \
     "
 
 DAEMONS += " \
-    lirc \ 
     tvheadend \
     transmission \
     nzbget \
@@ -67,4 +66,5 @@ XBMC += " \
      xbmc-nm-addon \
      xbmc-image-custom-rfs \
      libbluray \
+     lirc \ 
      " 

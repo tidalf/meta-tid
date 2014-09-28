@@ -1,0 +1,1879 @@
+diff --git a/Documentation/devicetree/bindings/regulator/pfuze100.txt b/Documentation/devicetree/bindings/regulator/pfuze100.txt
+index fc989b2..34ef5d1 100644
+--- a/Documentation/devicetree/bindings/regulator/pfuze100.txt
++++ b/Documentation/devicetree/bindings/regulator/pfuze100.txt
+@@ -1,7 +1,7 @@
+ PFUZE100 family of regulators
+ 
+ Required properties:
+-- compatible: "fsl,pfuze100"
++- compatible: "fsl,pfuze100" or "fsl,pfuze200"
+ - reg: I2C slave address
+ 
+ Required child node:
+@@ -10,11 +10,14 @@ Required child node:
+   Documentation/devicetree/bindings/regulator/regulator.txt.
+ 
+   The valid names for regulators are:
++  --PFUZE100
+   sw1ab,sw1c,sw2,sw3a,sw3b,sw4,swbst,vsnvs,vrefddr,vgen1~vgen6
++  --PFUZE200
++  sw1ab,sw2,sw3a,sw3b,swbst,vsnvs,vrefddr,vgen1~vgen6
+ 
+ Each regulator is defined using the standard binding for regulators.
+ 
+-Example:
++Example 1: PFUZE100
+ 
+ 	pmic: pfuze100@08 {
+ 		compatible = "fsl,pfuze100";
+@@ -113,3 +116,92 @@ Example:
+ 			};
+ 		};
+ 	};
++
++
++Example 2: PFUZE200
++
++	pmic: pfuze200@08 {
++		compatible = "fsl,pfuze200";
++		reg = <0x08>;
++
++		regulators {
++			sw1a_reg: sw1ab {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw2_reg: sw2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw3a_reg: sw3a {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw3b_reg: sw3b {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			swbst_reg: swbst {
++				regulator-min-microvolt = <5000000>;
++				regulator-max-microvolt = <5150000>;
++			};
++
++			snvs_reg: vsnvs {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vref_reg: vrefddr {
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vgen1_reg: vgen1 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen2_reg: vgen2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen3_reg: vgen3 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			vgen4_reg: vgen4 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen5_reg: vgen5 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen6_reg: vgen6 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++		};
++	};
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index f43b68b..e37ba84 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -120,6 +120,7 @@ dtb-$(CONFIG_ARCH_MXC) += \
+ 	imx6dl-sabresd.dtb \
+ 	imx6dl-sabresd-hdcp.dtb \
+ 	imx6dl-sabresd-ldo.dtb \
++	imx6dl-sabresd-pf200.dtb \
+ 	imx6dl-wandboard.dtb \
+ 	imx6q-arm2.dtb \
+ 	imx6q-sabreauto.dtb \
+@@ -131,9 +132,11 @@ dtb-$(CONFIG_ARCH_MXC) += \
+ 	imx6q-sabresd-hdcp.dtb \
+ 	imx6q-sabresd-ldo.dtb \
+ 	imx6q-sbc6x.dtb \
++	imx6q-udoo.dtb \
+ 	imx6sl-evk.dtb \
+ 	imx6sl-evk-csi.dtb \
+ 	imx6sl-evk-ldo.dtb \
++	imx6sl-evk-pf200.dtb \
+ 	vf610-twr.dtb
+ dtb-$(CONFIG_ARCH_MXS) += imx23-evk.dtb \
+ 	imx23-olinuxino.dtb \
+diff --git a/arch/arm/boot/dts/imx6dl-sabresd.dts b/arch/arm/boot/dts/imx6dl-sabresd.dts
+index 5713c71..b4c738d 100644
+--- a/arch/arm/boot/dts/imx6dl-sabresd.dts
++++ b/arch/arm/boot/dts/imx6dl-sabresd.dts
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 2013 Freescale Semiconductor, Inc.
++ * Copyright (C) 2013-2014 Freescale Semiconductor, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -10,131 +10,110 @@
+ 
+ #include "imx6dl.dtsi"
+ #include "imx6qdl-sabresd.dtsi"
++#include "imx6dl-sabresd-common.dtsi"
+ 
+ / {
+-	model = "Freescale i.MX6 DualLite SABRE Smart Device Board";
++	model = "Freescale i.MX6 DualLite SABRE Smart Device Board(PFUZE100)";
+ 	compatible = "fsl,imx6dl-sabresd", "fsl,imx6dl";
+ };
+ 
+-&battery {
+-	offset-charger = <1485>;
+-	offset-discharger = <1464>;
+-	offset-usb-charger = <1285>;
+-};
+-
+-&i2c3 {
+-	max17135@48 {
+-		compatible = "maxim,max17135";
+-		reg = <0x48>;
+-		vneg_pwrup = <1>;
+-		gvee_pwrup = <1>;
+-		vpos_pwrup = <2>;
+-		gvdd_pwrup = <1>;
+-		gvdd_pwrdn = <1>;
+-		vpos_pwrdn = <2>;
+-		gvee_pwrdn = <1>;
+-		vneg_pwrdn = <1>;
+-		SENSOR-supply = <&reg_sensor>;
+-		gpio_pmic_pwrgood = <&gpio2 21 0>;
+-		gpio_pmic_vcom_ctrl = <&gpio3 17 0>;
+-		gpio_pmic_wakeup = <&gpio3 20 0>;
+-		gpio_pmic_v3p3 = <&gpio2 20 0>;
+-		gpio_pmic_intr = <&gpio2 25 0>;
++&i2c2 {
++	pmic: pfuze100@08 {
++		compatible = "fsl,pfuze100";
++		reg = <0x08>;
+ 
+ 		regulators {
+-			DISPLAY_reg: DISPLAY {
+-				regulator-name = "DISPLAY";
++			sw1a_reg: sw1ab {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
+ 			};
+ 
+-			GVDD_reg: GVDD {
+-				/* 20v */
+-				regulator-name = "GVDD";
++			sw1c_reg: sw1c {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
+ 			};
+ 
+-			GVEE_reg: GVEE {
+-				/* -22v */
+-				regulator-name = "GVEE";
++			sw2_reg: sw2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
+ 			};
+ 
+-			HVINN_reg: HVINN {
+-				/* -22v */
+-				regulator-name = "HVINN";
++			sw3a_reg: sw3a {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
+ 			};
+ 
+-			HVINP_reg: HVINP {
+-				/* 20v */
+-				regulator-name = "HVINP";
++			sw3b_reg: sw3b {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
+ 			};
+ 
+-			VCOM_reg: VCOM {
+-				regulator-name = "VCOM";
+-				/* 2's-compliment, -4325000 */
+-				regulator-min-microvolt = <0xffbe0178>;
+-				/* 2's-compliment, -500000 */
+-				regulator-max-microvolt = <0xfff85ee0>;
++			sw4_reg: sw4 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
+ 			};
+ 
+-			VNEG_reg: VNEG {
+-				/* -15v */
+-				regulator-name = "VNEG";
++			swbst_reg: swbst {
++				regulator-min-microvolt = <5000000>;
++				regulator-max-microvolt = <5150000>;
+ 			};
+ 
+-			VPOS_reg: VPOS {
+-				/* 15v */
+-				regulator-name = "VPOS";
++			snvs_reg: vsnvs {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-boot-on;
++				regulator-always-on;
+ 			};
+ 
+-			V3P3_reg: V3P3 {
+-				regulator-name = "V3P3";
++			vref_reg: vrefddr {
++				regulator-boot-on;
++				regulator-always-on;
+ 			};
+-		};
+-	};
+-};
+ 
+-&iomuxc {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_hog_1>, <&pinctrl_hog_2>;
+-
+-	hog {
+-		pinctrl_hog_2: hoggrp-2 {
+-			fsl,pins = <
+-				/* MAX17135 */
+-				MX6QDL_PAD_EIM_A17__GPIO2_IO21 0x80000000
+-				MX6QDL_PAD_EIM_D17__GPIO3_IO17 0x80000000
+-				MX6QDL_PAD_EIM_D20__GPIO3_IO20 0x80000000
+-				MX6QDL_PAD_EIM_A18__GPIO2_IO20 0x80000000
+-				MX6QDL_PAD_EIM_OE__GPIO2_IO25 0x80000000
+-				/* elan touch */
+-				MX6QDL_PAD_EIM_A20__GPIO2_IO18 0x80000000
+-				MX6QDL_PAD_EIM_DA8__GPIO3_IO08 0x80000000
+-				MX6QDL_PAD_EIM_D28__GPIO3_IO28 0x170b0
+-			>;
+-		};
+-	};
+-};
++			vgen1_reg: vgen1 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
+ 
+-&epdc {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_epdc_0>;
+-	V3P3-supply = <&V3P3_reg>;
+-	VCOM-supply = <&VCOM_reg>;
+-	DISPLAY-supply = <&DISPLAY_reg>;
+-	status = "okay";
+-};
++			vgen2_reg: vgen2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
+ 
+-&ldb {
+-	ipu_id = <0>;
+-	sec_ipu_id = <0>;
+-};
++			vgen3_reg: vgen3 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++			};
+ 
+-&mxcfb1 {
+-	status = "okay";
+-};
++			vgen4_reg: vgen4 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
+ 
+-&mxcfb2 {
+-	status = "okay";
+-};
++			vgen5_reg: vgen5 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
+ 
+-&pxp {
+-	status = "okay";
++			vgen6_reg: vgen6 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++		};
++	};
+ };
+diff --git a/arch/arm/boot/dts/imx6q-sabresd.dts b/arch/arm/boot/dts/imx6q-sabresd.dts
+index 072e7d3..5e5ff56 100644
+--- a/arch/arm/boot/dts/imx6q-sabresd.dts
++++ b/arch/arm/boot/dts/imx6q-sabresd.dts
+@@ -26,6 +26,107 @@
+ 	offset-usb-charger = <1685>;
+ };
+ 
++&i2c2 {
++	pmic: pfuze100@08 {
++		compatible = "fsl,pfuze100";
++		reg = <0x08>;
++
++		regulators {
++			sw1a_reg: sw1ab {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw1c_reg: sw1c {
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1875000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <6250>;
++			};
++
++			sw2_reg: sw2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw3a_reg: sw3a {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw3b_reg: sw3b {
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1975000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			sw4_reg: sw4 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			swbst_reg: swbst {
++				regulator-min-microvolt = <5000000>;
++				regulator-max-microvolt = <5150000>;
++			};
++
++			snvs_reg: vsnvs {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vref_reg: vrefddr {
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			vgen1_reg: vgen1 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen2_reg: vgen2 {
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1550000>;
++			};
++
++			vgen3_reg: vgen3 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			vgen4_reg: vgen4 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen5_reg: vgen5 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++
++			vgen6_reg: vgen6 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++		};
++	};
++};
++
+ &mxcfb1 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+index 66b6145..5d774e5 100644
+--- a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+@@ -405,105 +405,6 @@
+ 		mclk_source = <0>;
+ 	};
+ 
+-	pmic: pfuze100@08 {
+-		compatible = "fsl,pfuze100";
+-		reg = <0x08>;
+-
+-		regulators {
+-			sw1a_reg: sw1ab {
+-				regulator-min-microvolt = <300000>;
+-				regulator-max-microvolt = <1875000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-				regulator-ramp-delay = <6250>;
+-			};
+-
+-			sw1c_reg: sw1c {
+-				regulator-min-microvolt = <300000>;
+-				regulator-max-microvolt = <1875000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-				regulator-ramp-delay = <6250>;
+-			};
+-
+-			sw2_reg: sw2 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			sw3a_reg: sw3a {
+-				regulator-min-microvolt = <400000>;
+-				regulator-max-microvolt = <1975000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			sw3b_reg: sw3b {
+-				regulator-min-microvolt = <400000>;
+-				regulator-max-microvolt = <1975000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			sw4_reg: sw4 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <3300000>;
+-			};
+-
+-			swbst_reg: swbst {
+-				regulator-min-microvolt = <5000000>;
+-				regulator-max-microvolt = <5150000>;
+-			};
+-
+-			snvs_reg: vsnvs {
+-				regulator-min-microvolt = <1000000>;
+-				regulator-max-microvolt = <3000000>;
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			vref_reg: vrefddr {
+-				regulator-boot-on;
+-				regulator-always-on;
+-			};
+-
+-			vgen1_reg: vgen1 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <1550000>;
+-			};
+-
+-			vgen2_reg: vgen2 {
+-				regulator-min-microvolt = <800000>;
+-				regulator-max-microvolt = <1550000>;
+-			};
+-
+-			vgen3_reg: vgen3 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-			};
+-
+-			vgen4_reg: vgen4 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-always-on;
+-			};
+-
+-			vgen5_reg: vgen5 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-always-on;
+-			};
+-
+-			vgen6_reg: vgen6 {
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-always-on;
+-			};
+-		};
+-	};
+-
+         egalax_ts@04 {
+                 compatible = "eeti,egalax_ts";
+                 reg = <0x04>;
+diff --git a/arch/arm/boot/dts/imx6sl-evk.dts b/arch/arm/boot/dts/imx6sl-evk.dts
+index 4966f38..ed0ce89 100644
+--- a/arch/arm/boot/dts/imx6sl-evk.dts
++++ b/arch/arm/boot/dts/imx6sl-evk.dts
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 2013 Freescale Semiconductor, Inc.
++ * Copyright (C) 2013-2014 Freescale Semiconductor, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -9,195 +9,14 @@
+ /dts-v1/;
+ 
+ #include "imx6sl.dtsi"
++#include "imx6sl-evk-common.dtsi"
+ 
+ / {
+-	model = "Freescale i.MX6 SoloLite EVK Board";
++	model = "Freescale i.MX6 SoloLite EVK Board(PFUZE100)";
+ 	compatible = "fsl,imx6sl-evk", "fsl,imx6sl";
+-
+-	memory {
+-		reg = <0x80000000 0x40000000>;
+-	};
+-
+-	battery: max8903@0 {
+-		compatible = "fsl,max8903-charger";
+-		pinctrl-names = "default";
+-		dok_input = <&gpio4 13 1>;
+-		uok_input = <&gpio4 13 1>;
+-		chg_input = <&gpio4 15 1>;
+-		flt_input = <&gpio4 14 1>;
+-		fsl,dcm_always_high;
+-		fsl,dc_valid;
+-		fsl,adc_disable;
+-		status = "okay";
+-	};
+-	regulators {
+-		compatible = "simple-bus";
+-
+-		reg_lcd_3v3: lcd-3v3 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "lcd-3v3";
+-			gpio = <&gpio4 3 0>;
+-			enable-active-high;
+-		};
+-
+-		reg_aud3v: wm8962_supply_3v15 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "wm8962-supply-3v15";
+-			regulator-min-microvolt = <3150000>;
+-			regulator-max-microvolt = <3150000>;
+-			regulator-boot-on;
+-		};
+-
+-		reg_aud4v: wm8962_supply_4v2 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "wm8962-supply-4v2";
+-			regulator-min-microvolt = <4325000>;
+-			regulator-max-microvolt = <4325000>;
+-			regulator-boot-on;
+-		};
+-
+-		reg_usb_otg1_vbus: usb_otg1_vbus {
+-			compatible = "regulator-fixed";
+-			regulator-name = "usb_otg1_vbus";
+-			regulator-min-microvolt = <5000000>;
+-			regulator-max-microvolt = <5000000>;
+-			gpio = <&gpio4 0 0>;
+-			enable-active-high;
+-		};
+-
+-		reg_usb_otg2_vbus: usb_otg2_vbus {
+-			compatible = "regulator-fixed";
+-			regulator-name = "usb_otg2_vbus";
+-			regulator-min-microvolt = <5000000>;
+-			regulator-max-microvolt = <5000000>;
+-			gpio = <&gpio4 2 0>;
+-			enable-active-high;
+-		};
+-	};
+-
+-	backlight {
+-		compatible = "pwm-backlight";
+-		pwms = <&pwm1 0 5000000>;
+-		brightness-levels = <0 4 8 16 32 64 128 255>;
+-		default-brightness-level = <6>;
+-	};
+-
+-	csi_v4l2_cap {
+-		compatible = "fsl,imx6sl-csi-v4l2";
+-		status = "disabled";
+-	};
+-
+-	pxp_v4l2_out {
+-		compatible = "fsl,imx6sl-pxp-v4l2";
+-		status = "okay";
+-	};
+-
+-	sound {
+-		compatible = "fsl,imx6q-sabresd-wm8962",
+-			   "fsl,imx-audio-wm8962";
+-		model = "wm8962-audio";
+-		ssi-controller = <&ssi2>;
+-		audio-codec = <&codec>;
+-		audio-routing =
+-			"Headphone Jack", "HPOUTL",
+-			"Headphone Jack", "HPOUTR",
+-			"Ext Spk", "SPKOUTL",
+-			"Ext Spk", "SPKOUTR",
+-			"AMIC", "MICBIAS",
+-			"IN3R", "AMIC";
+-		amic-mono;
+-		mux-int-port = <2>;
+-		mux-ext-port = <3>;
+-		hp-det-gpios = <&gpio4 19 1>;
+-	};
+-
+-	sound-spdif {
+-		compatible = "fsl,imx-audio-spdif",
+-			   "fsl,imx6sl-evk-spdif";
+-		model = "imx-spdif";
+-		spdif-controller = <&spdif>;
+-		spdif-out;
+-	};
+-
+-	sii902x_reset: sii902x-reset {
+-		compatible = "gpio-reset";
+-		reset-gpios = <&gpio2 19 1>;
+-		reset-delay-us = <100000>;
+-		#reset-cells = <0>;
+-	};
+-};
+-
+-&audmux {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_audmux_1>;
+-	status = "okay";
+-};
+-
+-&csi {
+-	status = "disabled";
+-};
+-
+-&ecspi1 {
+-	fsl,spi-num-chipselects = <1>;
+-	cs-gpios = <&gpio4 11 0>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_ecspi1_1>;
+-	status = "okay";
+-
+-	flash: m25p80@0 {
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		compatible = "st,m25p32";
+-		spi-max-frequency = <20000000>;
+-		reg = <0>;
+-	};
+-};
+-
+-&epdc {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_epdc_0>;
+-	V3P3-supply = <&V3P3_reg>;
+-	VCOM-supply = <&VCOM_reg>;
+-	DISPLAY-supply = <&DISPLAY_reg>;
+-	status = "okay";
+-};
+-
+-&cpu0 {
+-	arm-supply = <&sw1a_reg>;
+-	soc-supply = <&sw1c_reg>;
+-	pu-supply = <&pu_dummy>; /* use pu_dummy if VDDSOC share with VDDPU */
+-};
+-
+-&fec {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&pinctrl_fec_1>;
+-	pinctrl-1 = <&pinctrl_fec_1_sleep>;
+-	phy-mode = "rmii";
+-	phy-reset-gpios = <&gpio4 21 0>; /* GPIO4_21 */
+-	phy-reset-duration = <1>;
+-	status = "okay";
+-};
+-
+-&gpc {
+-	fsl,cpu_pupscr_sw2iso = <0xf>;
+-	fsl,cpu_pupscr_sw = <0xf>;
+-	fsl,cpu_pdnscr_iso2sw = <0x1>;
+-	fsl,cpu_pdnscr_iso = <0x1>;
+-	fsl,ldo-bypass = <1>; /* use ldo-bypass, u-boot will check it and configure */
+-	fsl,wdog-reset = <1>; /* watchdog select of reset source */
+-	pu-supply = <&pu_dummy>; /* ldo-bypass:use pu_dummy if VDDSOC share with VDDPU */
+-};
+-
+-&gpu {
+-	pu-supply = <&pu_dummy>; /* ldo-bypass:use pu_dummy if VDDSOC share with VDDPU */
+ };
+ 
+ &i2c1 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c1_1>;
+-	status = "okay";
+-
+ 	pmic: pfuze100@08 {
+ 		compatible = "fsl,pfuze100";
+ 		reg = <0x08>;
+@@ -297,314 +116,4 @@
+ 			};
+ 		};
+ 	};
+-
+-	elan@10 {
+-		compatible = "elan,elan-touch";
+-		reg = <0x10>;
+-		interrupt-parent = <&gpio2>;
+-		interrupts = <10 2>;
+-		gpio_elan_cs = <&gpio2 9 0>;
+-		gpio_elan_rst = <&gpio4 4 0>;
+-		gpio_intr = <&gpio2 10 0>;
+-		status = "okay";
+-	};
+-
+-	max17135@48 {
+-		compatible = "maxim,max17135";
+-		reg = <0x48>;
+-		vneg_pwrup = <1>;
+-		gvee_pwrup = <2>;
+-		vpos_pwrup = <10>;
+-		gvdd_pwrup = <12>;
+-		gvdd_pwrdn = <1>;
+-		vpos_pwrdn = <2>;
+-		gvee_pwrdn = <8>;
+-		vneg_pwrdn = <10>;
+-		gpio_pmic_pwrgood = <&gpio2 13 0>;
+-		gpio_pmic_vcom_ctrl = <&gpio2 3 0>;
+-		gpio_pmic_wakeup = <&gpio2 14 0>;
+-		gpio_pmic_v3p3 = <&gpio2 7 0>;
+-		gpio_pmic_intr = <&gpio2 12 0>;
+-
+-		regulators {
+-			DISPLAY_reg: DISPLAY {
+-				regulator-name = "DISPLAY";
+-			};
+-
+-			GVDD_reg: GVDD {
+-				/* 20v */
+-				regulator-name = "GVDD";
+-			};
+-
+-			GVEE_reg: GVEE {
+-				/* -22v */
+-				regulator-name = "GVEE";
+-			};
+-
+-			HVINN_reg: HVINN {
+-				/* -22v */
+-				regulator-name = "HVINN";
+-			};
+-
+-			HVINP_reg: HVINP {
+-				/* 20v */
+-				regulator-name = "HVINP";
+-			};
+-
+-			VCOM_reg: VCOM {
+-				regulator-name = "VCOM";
+-				/* 2's-compliment, -4325000 */
+-				regulator-min-microvolt = <0xffbe0178>;
+-				/* 2's-compliment, -500000 */
+-				regulator-max-microvolt = <0xfff85ee0>;
+-			};
+-
+-			VNEG_reg: VNEG {
+-				/* -15v */
+-				regulator-name = "VNEG";
+-			};
+-
+-			VPOS_reg: VPOS {
+-				/* 15v */
+-				regulator-name = "VPOS";
+-			};
+-
+-			V3P3_reg: V3P3 {
+-				regulator-name = "V3P3";
+-			};
+-		};
+-	};
+-
+-	mma8450@1c {
+-		compatible = "fsl,mma8450";
+-		reg = <0x1c>;
+-	};
+-};
+-
+-&i2c2 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c2_1>;
+-	status = "okay";
+-
+-	codec: wm8962@1a {
+-		compatible = "wlf,wm8962";
+-		reg = <0x1a>;
+-		clocks = <&clks IMX6SL_CLK_EXTERN_AUDIO>;
+-		DCVDD-supply = <&vgen3_reg>;
+-		DBVDD-supply = <&reg_aud3v>;
+-		AVDD-supply = <&vgen3_reg>;
+-		CPVDD-supply = <&vgen3_reg>;
+-		MICVDD-supply = <&reg_aud3v>;
+-		PLLVDD-supply = <&vgen3_reg>;
+-		SPKVDD1-supply = <&reg_aud4v>;
+-		SPKVDD2-supply = <&reg_aud4v>;
+-		amic-mono;
+-	};
+-
+-	sii902x@39 {
+-		compatible = "SiI,sii902x";
+-		interrupt-parent = <&gpio2>;
+-		interrupts = <10 2>;
+-		mode_str ="1280x720M@60";
+-		bits-per-pixel = <32>;
+-		resets = <&sii902x_reset>;
+-		reg = <0x39>;
+-	};
+-};
+-
+-&i2c3 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c3_1>;
+-	status = "disabled";
+-
+-	ov564x: ov564x@3c {
+-		compatible = "ovti,ov564x";
+-		reg = <0x3c>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_csi_0>;
+-		clocks = <&clks IMX6SL_CLK_CSI>;
+-		clock-names = "csi_mclk";
+-		AVDD-supply = <&vgen6_reg>;  /* 2.8v */
+-		DVDD-supply = <&vgen2_reg>;  /* 1.5v*/
+-		pwn-gpios = <&gpio1 25 1>;
+-		rst-gpios = <&gpio1 26 0>;
+-		csi_id = <0>;
+-		mclk = <24000000>;
+-		mclk_source = <0>;
+-	};
+-};
+-
+-&iomuxc {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&pinctrl_hog>;
+-	pinctrl-1 = <&pinctrl_hog_sleep>;
+-
+-	hog {
+-		pinctrl_hog: hoggrp {
+-			fsl,pins = <
+-				MX6SL_PAD_KEY_ROW7__GPIO4_IO07    0x17059
+-				MX6SL_PAD_KEY_COL7__GPIO4_IO06    0x17059
+-				MX6SL_PAD_SD2_DAT7__GPIO5_IO00    0x17059
+-				MX6SL_PAD_SD2_DAT6__GPIO4_IO29    0x17059
+-				MX6SL_PAD_REF_CLK_32K__GPIO3_IO22 0x17059
+-				MX6SL_PAD_FEC_TX_CLK__GPIO4_IO21  0x80000000
+-				MX6SL_PAD_KEY_ROW5__GPIO4_IO03	  0x110b0
+-				MX6SL_PAD_EPDC_VCOM0__GPIO2_IO03  0x80000000
+-				MX6SL_PAD_EPDC_PWRSTAT__GPIO2_IO13 0x80000000
+-				MX6SL_PAD_EPDC_PWRCTRL0__GPIO2_IO07 0x80000000
+-				MX6SL_PAD_EPDC_PWRWAKEUP__GPIO2_IO14 0x80000000
+-				MX6SL_PAD_EPDC_PWRINT__GPIO2_IO12 0x80000000
+-				MX6SL_PAD_EPDC_PWRCTRL3__GPIO2_IO10 0x170b0
+-				MX6SL_PAD_EPDC_PWRCTRL2__GPIO2_IO09 0x80000000
+-				MX6SL_PAD_KEY_COL6__GPIO4_IO04    0x110b0
+-				MX6SL_PAD_ECSPI2_MISO__GPIO4_IO14 0x17000
+-				MX6SL_PAD_ECSPI2_MOSI__GPIO4_IO13 0x17000
+-				MX6SL_PAD_ECSPI2_SS0__GPIO4_IO15  0x17000
+-				MX6SL_PAD_FEC_RX_ER__GPIO4_IO19   0x1b0b0
+-				MX6SL_PAD_LCD_RESET__GPIO2_IO19 0x1b0b0
+-				MX6SL_PAD_KEY_COL4__GPIO4_IO00	0x80000000
+-				MX6SL_PAD_KEY_COL5__GPIO4_IO02	0x80000000
+-			>;
+-		};
+-
+-		pinctrl_hog_sleep: hoggrp_sleep {
+-			fsl,pins = <
+-				MX6SL_PAD_KEY_ROW5__GPIO4_IO03	  0x3080
+-				MX6SL_PAD_KEY_COL6__GPIO4_IO04 	  0x3080
+-				MX6SL_PAD_LCD_RESET__GPIO2_IO19   0x3080
+-			>;
+-		};
+-	};
+-};
+-
+-&kpp {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&pinctrl_kpp_1>;
+-	pinctrl-1 = <&pinctrl_kpp_1_sleep>;
+-	linux,keymap = <
+-			0x00000067      /* KEY_UP */
+-			0x0001006c      /* KEY_DOWN */
+-			0x0002001c      /* KEY_ENTER */
+-			0x01000066      /* KEY_HOME */
+-			0x0101006a      /* KEY_RIGHT */
+-			0x01020069      /* KEY_LEFT */
+-			0x02000072      /* KEY_VOLUMEDOWN */
+-			0x02010073      /* KEY_VOLUMEUP */
+-		>;
+-        status = "okay";
+-};
+-
+-&lcdif {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_lcdif_dat_0
+-		     &pinctrl_lcdif_ctrl_0>;
+-	lcd-supply = <&reg_lcd_3v3>;
+-	display = <&display>;
+-	status = "okay";
+-
+-	display: display {
+-		bits-per-pixel = <16>;
+-		bus-width = <24>;
+-
+-		display-timings {
+-			native-mode = <&timing0>;
+-			timing0: timing0 {
+-				clock-frequency = <33500000>;
+-				hactive = <800>;
+-				vactive = <480>;
+-				hback-porch = <89>;
+-				hfront-porch = <164>;
+-				vback-porch = <23>;
+-				vfront-porch = <10>;
+-				hsync-len = <10>;
+-				vsync-len = <10>;
+-				hsync-active = <0>;
+-				vsync-active = <0>;
+-				de-active = <1>;
+-				pixelclk-active = <0>;
+-			};
+-		};
+-	};
+-};
+-
+-&pwm1 {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&pinctrl_pwm1_0>;
+-	pinctrl-1 = <&pinctrl_pwm1_0_sleep>;
+-	status = "okay";
+-};
+-
+-&pxp {
+-	status = "okay";
+-};
+-
+-&spdif {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_spdif_1>;
+-	status = "okay";
+-};
+-
+-&ssi2 {
+-	fsl,mode = "i2s-slave";
+-	status = "okay";
+-};
+-
+-&uart1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_uart1_1>;
+-	status = "okay";
+-};
+-
+-&usbotg1 {
+-	vbus-supply = <&reg_usb_otg1_vbus>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usbotg1_1>;
+-	disable-over-current;
+-	imx6-usb-charger-detection;
+-	status = "okay";
+-};
+-
+-&usbotg2 {
+-	vbus-supply = <&reg_usb_otg2_vbus>;
+-	dr_mode = "host";
+-	disable-over-current;
+-	status = "okay";
+-};
+-
+-&usdhc1 {
+-	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+-	pinctrl-0 = <&pinctrl_usdhc1_1>;
+-	pinctrl-1 = <&pinctrl_usdhc1_1_100mhz>;
+-	pinctrl-2 = <&pinctrl_usdhc1_1_200mhz>;
+-	bus-width = <8>;
+-	cd-gpios = <&gpio4 7 0>;
+-	wp-gpios = <&gpio4 6 0>;
+-	keep-power-in-suspend;
+-	enable-sdio-wakeup;
+-	status = "okay";
+-};
+-
+-&usdhc2 {
+-	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+-	pinctrl-0 = <&pinctrl_usdhc2_1>;
+-	pinctrl-1 = <&pinctrl_usdhc2_1_100mhz>;
+-	pinctrl-2 = <&pinctrl_usdhc2_1_200mhz>;
+-	cd-gpios = <&gpio5 0 0>;
+-	wp-gpios = <&gpio4 29 0>;
+-	keep-power-in-suspend;
+-	enable-sdio-wakeup;
+-	status = "okay";
+-};
+-
+-&usdhc3 {
+-	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+-	pinctrl-0 = <&pinctrl_usdhc3_1>;
+-	pinctrl-1 = <&pinctrl_usdhc3_1_100mhz>;
+-	pinctrl-2 = <&pinctrl_usdhc3_1_200mhz>;
+-	cd-gpios = <&gpio3 22 0>;
+-	keep-power-in-suspend;
+-	enable-sdio-wakeup;
+-	status = "okay";
+ };
+diff --git a/arch/arm/kernel/io.c b/arch/arm/kernel/io.c
+index dcd5b4d..6d33983 100644
+--- a/arch/arm/kernel/io.c
++++ b/arch/arm/kernel/io.c
+@@ -6,6 +6,48 @@
+  * Copy data from IO memory space to "real" memory space.
+  * This needs to be optimized.
+  */
++
++#if 1
++
++void* asmcopy_8w(void* dst, void* src, int blocks);
++asm("                                           \n\
++        .align  2                               \n\
++        .text                                   \n\
++        .global asmcopy_8w                      \n\
++        .type asmcopy_8w, %function             \n\
++asmcopy_8w:                                     \n\
++        stmfd sp!, {r3-r10, lr}                 \n\
++.Loop:  ldmia r1!, {r3-r10}                     \n\
++        stmia r0!, {r3-r10}                     \n\
++        subs r2, r2, #1                         \n\
++        bne .Loop                               \n\
++        ldmfd sp!, {r3-r10, pc}                 \n\
++");
++
++void _memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
++{
++  unsigned char *dst = (unsigned char *)to;
++  unsigned char *src = (unsigned char *)from;
++
++  if((((int)src&3)==0)&&(((int)dst&3)==0)&&(count>=32)) {
++    /* copy big chunks */
++    asmcopy_8w(dst,src,count>>5);
++    dst += count & (~0x1f);
++    src += count & (~0x1f);
++    count &= 0x1f;
++  }
++
++  /* un-aligned or trailing accesses */
++  while (count) {
++    count--;
++    *dst = readb(src);
++    dst++;
++    src++;
++  }
++
++}
++
++#else
+ void _memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
+ {
+ 	unsigned char *t = to;
+@@ -16,7 +58,7 @@ void _memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
+ 		from++;
+ 	}
+ }
+-
++#endif 
+ /*
+  * Copy data from "real" memory space to IO memory space.
+  * This needs to be optimized.
+diff --git a/arch/arm/mach-imx/cpuidle-imx6q.c b/arch/arm/mach-imx/cpuidle-imx6q.c
+index d74d0ce..9ffbd34 100644
+--- a/arch/arm/mach-imx/cpuidle-imx6q.c
++++ b/arch/arm/mach-imx/cpuidle-imx6q.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 2012-2013 Freescale Semiconductor, Inc.
++ * Copyright (C) 2012-2014 Freescale Semiconductor, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -65,9 +65,6 @@ static struct cpuidle_driver imx6q_cpuidle_driver = {
+ 
+ int __init imx6q_cpuidle_init(void)
+ {
+-	/* Need to enable SCU standby for entering WAIT modes */
+-	imx_scu_standby_enable();
+-
+ 	/* Set cache lpm bit for reliable WAIT mode support */
+ 	imx6_set_cache_lpm_in_wait(true);
+ 
+diff --git a/arch/arm/mach-imx/gpc.c b/arch/arm/mach-imx/gpc.c
+index 9734327..25e987c 100644
+--- a/arch/arm/mach-imx/gpc.c
++++ b/arch/arm/mach-imx/gpc.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright 2011-2013 Freescale Semiconductor, Inc.
++ * Copyright 2011-2014 Freescale Semiconductor, Inc.
+  * Copyright 2011 Linaro Ltd.
+  *
+  * The code contained herein is licensed under the GNU General Public
+@@ -90,7 +90,8 @@ static void imx_disp_clk(bool enable)
+ 
+ static void imx_gpc_dispmix_on(void)
+ {
+-	if (cpu_is_imx6sl()) {
++	if (cpu_is_imx6sl() &&
++		imx_get_soc_revision() >= IMX_CHIP_REVISION_1_2) {
+ 		imx_disp_clk(true);
+ 
+ 		writel_relaxed(0x0, gpc_base + GPC_PGC_DISP_PGCR_OFFSET);
+@@ -105,7 +106,8 @@ static void imx_gpc_dispmix_on(void)
+ 
+ static void imx_gpc_dispmix_off(void)
+ {
+-	if (cpu_is_imx6sl()) {
++	if (cpu_is_imx6sl() &&
++		imx_get_soc_revision() >= IMX_CHIP_REVISION_1_2) {
+ 		imx_disp_clk(true);
+ 
+ 		writel_relaxed(0xFFFFFFFF,
+diff --git a/arch/arm/mach-imx/platsmp.c b/arch/arm/mach-imx/platsmp.c
+index c6e1ab5..d2fa7ec 100644
+--- a/arch/arm/mach-imx/platsmp.c
++++ b/arch/arm/mach-imx/platsmp.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright 2011 Freescale Semiconductor, Inc.
++ * Copyright 2011-2014 Freescale Semiconductor, Inc.
+  * Copyright 2011 Linaro Ltd.
+  *
+  * The code contained herein is licensed under the GNU General Public
+@@ -77,6 +77,8 @@ static void __init imx_smp_init_cpus(void)
+ void imx_smp_prepare(void)
+ {
+ 	scu_enable(scu_base);
++	/* Need to enable SCU standby for entering WAIT mode */
++	imx_scu_standby_enable();
+ }
+ 
+ static void __init imx_smp_prepare_cpus(unsigned int max_cpus)
+diff --git a/arch/arm/mach-imx/pm-imx6.c b/arch/arm/mach-imx/pm-imx6.c
+index de46b87..587cc7e 100644
+--- a/arch/arm/mach-imx/pm-imx6.c
++++ b/arch/arm/mach-imx/pm-imx6.c
+@@ -73,6 +73,8 @@ static int (*suspend_in_iram_fn)(void *iram_vbase,
+ 	unsigned long iram_pbase, unsigned int cpu_type);
+ static unsigned int cpu_type;
+ static void __iomem *ccm_base;
++static unsigned long dcr;
++static unsigned long pcr;
+ 
+ unsigned long save_ttbr1(void)
+ {
+@@ -111,6 +113,34 @@ void imx6_set_cache_lpm_in_wait(bool enable)
+ 	}
+ }
+ 
++static void imx6_save_cpu_arch_regs(void)
++{
++	/* Save the Diagnostic Control Register. */
++	asm volatile(
++		"mrc p15, 0, %0, c15, c0, 1\n"
++	: "=r" (dcr)
++	);
++	/* Save the Power Control Register. */
++	asm volatile(
++		"mrc p15, 0, %0, c15, c0, 0\n"
++	: "=r" (pcr)
++	);
++}
++
++static void imx6_restore_cpu_arch_regs(void)
++{
++	/* Restore the diagnostic Control Register. */
++	asm volatile(
++		"mcr p15, 0, %0, c15, c0, 1\n"
++	: : "r" (dcr)
++	);
++	/* Restore the Power Control Register. */
++	asm volatile(
++		"mcr p15, 0, %0, c15, c0, 0\n"
++	: : "r" (pcr)
++	);
++}
++
+ static void imx6_enable_rbc(bool enable)
+ {
+ 	u32 val;
+@@ -290,8 +320,14 @@ static int imx6_pm_enter(suspend_state_t state)
+ 		imx_gpc_pre_suspend(true);
+ 		imx_anatop_pre_suspend();
+ 		imx_set_cpu_jump(0, v7_cpu_resume);
++
++		imx6_save_cpu_arch_regs();
++
+ 		/* Zzz ... */
+ 		cpu_suspend(0, imx6_suspend_finish);
++
++		imx6_restore_cpu_arch_regs();
++
+ 		if (!cpu_is_imx6sl())
+ 			imx_smp_prepare();
+ 		imx_anatop_post_resume();
+diff --git a/drivers/power/reset/Kconfig b/drivers/power/reset/Kconfig
+index 349e9ae..c2c57c3 100644
+--- a/drivers/power/reset/Kconfig
++++ b/drivers/power/reset/Kconfig
+@@ -37,3 +37,10 @@ config POWER_RESET_VEXPRESS
+ 	help
+ 	  Power off and reset support for the ARM Ltd. Versatile
+ 	  Express boards.
++
++config POWER_RESET_UDOO
++	bool "UDOO power-off driver"
++	depends on POWER_RESET
++	help
++	  This driver supports powering down the UDOO.
++	  Say Y if you have a UDOO.
+diff --git a/drivers/power/reset/Makefile b/drivers/power/reset/Makefile
+index 372807f..62a822a 100644
+--- a/drivers/power/reset/Makefile
++++ b/drivers/power/reset/Makefile
+@@ -2,3 +2,4 @@ obj-$(CONFIG_POWER_RESET_GPIO) += gpio-poweroff.o
+ obj-$(CONFIG_POWER_RESET_QNAP) += qnap-poweroff.o
+ obj-$(CONFIG_POWER_RESET_RESTART) += restart-poweroff.o
+ obj-$(CONFIG_POWER_RESET_VEXPRESS) += vexpress-poweroff.o
++obj-$(CONFIG_POWER_RESET_UDOO) += udoo-poweroff.o
+diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+index 1339404..5b64f2c 100644
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -305,12 +305,12 @@ config REGULATOR_PCF50633
+ 	 on PCF50633
+ 
+ config REGULATOR_PFUZE100
+-	tristate "Support regulators on Freescale PFUZE100 PMIC"
++	tristate "Freescale PFUZE100/PFUZE200 regulator driver"
+ 	depends on I2C
+ 	select REGMAP_I2C
+ 	help
+-	  Say y here to support the regulators found on the Freescale PFUZE100
+-	  PMIC.
++	  Say y here to support the regulators found on the Freescale
++	  PFUZE100/PFUZE200 PMIC.
+ 
+ config REGULATOR_RC5T583
+ 	tristate "RICOH RC5T583 Power regulators"
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index ba67b2c..b9c1b9a 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -38,7 +38,7 @@
+ 
+ #define PFUZE100_DEVICEID	0x0
+ #define PFUZE100_REVID		0x3
+-#define PFUZE100_FABID		0x3
++#define PFUZE100_FABID		0x4
+ 
+ #define PFUZE100_SW1ABVOL	0x20
+ #define PFUZE100_SW1CVOL	0x2e
+@@ -56,6 +56,8 @@
+ #define PFUZE100_VGEN5VOL	0x70
+ #define PFUZE100_VGEN6VOL	0x71
+ 
++enum chips { PFUZE100, PFUZE200 };
++
+ struct pfuze_regulator {
+ 	struct regulator_desc desc;
+ 	unsigned char stby_reg;
+@@ -63,6 +65,7 @@ struct pfuze_regulator {
+ };
+ 
+ struct pfuze_chip {
++	int	chip_id;
+ 	struct regmap *regmap;
+ 	struct device *dev;
+ 	struct pfuze_regulator regulator_descs[PFUZE100_MAX_REGULATOR];
+@@ -78,14 +81,16 @@ static const int pfuze100_vsnvs[] = {
+ };
+ 
+ static const struct i2c_device_id pfuze_device_id[] = {
+-	{.name = "pfuze100"},
+-	{},
++	{.name = "pfuze100", .driver_data = PFUZE100},
++	{.name = "pfuze200", .driver_data = PFUZE200},
++	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, pfuze_device_id);
+ 
+ static const struct of_device_id pfuze_dt_ids[] = {
+-	{ .compatible = "fsl,pfuze100" },
+-	{},
++	{ .compatible = "fsl,pfuze100", .data = (void *)PFUZE100},
++	{ .compatible = "fsl,pfuze200", .data = (void *)PFUZE200},
++	{ }
+ };
+ MODULE_DEVICE_TABLE(of, pfuze_dt_ids);
+ 
+@@ -139,14 +144,14 @@ static struct regulator_ops pfuze100_swb_regulator_ops = {
+ 
+ };
+ 
+-#define PFUZE100_FIXED_REG(_name, base, voltage)	\
+-	[PFUZE100_ ## _name] = {	\
++#define PFUZE100_FIXED_REG(_chip, _name, base, voltage)	\
++	[_chip ## _ ## _name] = {	\
+ 		.desc = {	\
+ 			.name = #_name,	\
+ 			.n_voltages = 1,	\
+ 			.ops = &pfuze100_fixed_regulator_ops,	\
+ 			.type = REGULATOR_VOLTAGE,	\
+-			.id = PFUZE100_ ## _name,	\
++			.id = _chip ## _ ## _name,	\
+ 			.owner = THIS_MODULE,	\
+ 			.min_uV = (voltage),	\
+ 			.enable_reg = (base),	\
+@@ -154,14 +159,14 @@ static struct regulator_ops pfuze100_swb_regulator_ops = {
+ 		},	\
+ 	}
+ 
+-#define PFUZE100_SW_REG(_name, base, min, max, step)	\
+-	[PFUZE100_ ## _name] = {	\
++#define PFUZE100_SW_REG(_chip, _name, base, min, max, step)	\
++	[_chip ## _ ## _name] = {	\
+ 		.desc = {	\
+ 			.name = #_name,\
+ 			.n_voltages = ((max) - (min)) / (step) + 1,	\
+ 			.ops = &pfuze100_sw_regulator_ops,	\
+ 			.type = REGULATOR_VOLTAGE,	\
+-			.id = PFUZE100_ ## _name,	\
++			.id = _chip ## _ ## _name,	\
+ 			.owner = THIS_MODULE,	\
+ 			.min_uV = (min),	\
+ 			.uV_step = (step),	\
+@@ -172,14 +177,14 @@ static struct regulator_ops pfuze100_swb_regulator_ops = {
+ 		.stby_mask = 0x3f,	\
+ 	}
+ 
+-#define PFUZE100_SWB_REG(_name, base, mask, voltages)	\
+-	[PFUZE100_ ## _name] = {	\
++#define PFUZE100_SWB_REG(_chip, _name, base, mask, voltages)	\
++	[_chip ## _ ##  _name] = {	\
+ 		.desc = {	\
+ 			.name = #_name,	\
+ 			.n_voltages = ARRAY_SIZE(voltages),	\
+ 			.ops = &pfuze100_swb_regulator_ops,	\
+ 			.type = REGULATOR_VOLTAGE,	\
+-			.id = PFUZE100_ ## _name,	\
++			.id = _chip ## _ ## _name,	\
+ 			.owner = THIS_MODULE,	\
+ 			.volt_table = voltages,	\
+ 			.vsel_reg = (base),	\
+@@ -187,14 +192,14 @@ static struct regulator_ops pfuze100_swb_regulator_ops = {
+ 		},	\
+ 	}
+ 
+-#define PFUZE100_VGEN_REG(_name, base, min, max, step)	\
+-	[PFUZE100_ ## _name] = {	\
++#define PFUZE100_VGEN_REG(_chip, _name, base, min, max, step)	\
++	[_chip ## _ ## _name] = {	\
+ 		.desc = {	\
+ 			.name = #_name,	\
+ 			.n_voltages = ((max) - (min)) / (step) + 1,	\
+ 			.ops = &pfuze100_ldo_regulator_ops,	\
+ 			.type = REGULATOR_VOLTAGE,	\
+-			.id = PFUZE100_ ## _name,	\
++			.id = _chip ## _ ## _name,	\
+ 			.owner = THIS_MODULE,	\
+ 			.min_uV = (min),	\
+ 			.uV_step = (step),	\
+@@ -207,25 +212,45 @@ static struct regulator_ops pfuze100_swb_regulator_ops = {
+ 		.stby_mask = 0x20,	\
+ 	}
+ 
++/* PFUZE100 */
+ static struct pfuze_regulator pfuze100_regulators[] = {
+-	PFUZE100_SW_REG(SW1AB, PFUZE100_SW1ABVOL, 300000, 1875000, 25000),
+-	PFUZE100_SW_REG(SW1C, PFUZE100_SW1CVOL, 300000, 1875000, 25000),
+-	PFUZE100_SW_REG(SW2, PFUZE100_SW2VOL, 400000, 1975000, 25000),
+-	PFUZE100_SW_REG(SW3A, PFUZE100_SW3AVOL, 400000, 1975000, 25000),
+-	PFUZE100_SW_REG(SW3B, PFUZE100_SW3BVOL, 400000, 1975000, 25000),
+-	PFUZE100_SW_REG(SW4, PFUZE100_SW4VOL, 400000, 1975000, 25000),
+-	PFUZE100_SWB_REG(SWBST, PFUZE100_SWBSTCON1, 0x3 , pfuze100_swbst),
+-	PFUZE100_SWB_REG(VSNVS, PFUZE100_VSNVSVOL, 0x7, pfuze100_vsnvs),
+-	PFUZE100_FIXED_REG(VREFDDR, PFUZE100_VREFDDRCON, 750000),
+-	PFUZE100_VGEN_REG(VGEN1, PFUZE100_VGEN1VOL, 800000, 1550000, 50000),
+-	PFUZE100_VGEN_REG(VGEN2, PFUZE100_VGEN2VOL, 800000, 1550000, 50000),
+-	PFUZE100_VGEN_REG(VGEN3, PFUZE100_VGEN3VOL, 1800000, 3300000, 100000),
+-	PFUZE100_VGEN_REG(VGEN4, PFUZE100_VGEN4VOL, 1800000, 3300000, 100000),
+-	PFUZE100_VGEN_REG(VGEN5, PFUZE100_VGEN5VOL, 1800000, 3300000, 100000),
+-	PFUZE100_VGEN_REG(VGEN6, PFUZE100_VGEN6VOL, 1800000, 3300000, 100000),
++	PFUZE100_SW_REG(PFUZE100, SW1AB, PFUZE100_SW1ABVOL, 300000, 1875000, 25000),
++	PFUZE100_SW_REG(PFUZE100, SW1C, PFUZE100_SW1CVOL, 300000, 1875000, 25000),
++	PFUZE100_SW_REG(PFUZE100, SW2, PFUZE100_SW2VOL, 400000, 1975000, 25000),
++	PFUZE100_SW_REG(PFUZE100, SW3A, PFUZE100_SW3AVOL, 400000, 1975000, 25000),
++	PFUZE100_SW_REG(PFUZE100, SW3B, PFUZE100_SW3BVOL, 400000, 1975000, 25000),
++	PFUZE100_SW_REG(PFUZE100, SW4, PFUZE100_SW4VOL, 400000, 1975000, 25000),
++	PFUZE100_SWB_REG(PFUZE100, SWBST, PFUZE100_SWBSTCON1, 0x3 , pfuze100_swbst),
++	PFUZE100_SWB_REG(PFUZE100, VSNVS, PFUZE100_VSNVSVOL, 0x7, pfuze100_vsnvs),
++	PFUZE100_FIXED_REG(PFUZE100, VREFDDR, PFUZE100_VREFDDRCON, 750000),
++	PFUZE100_VGEN_REG(PFUZE100, VGEN1, PFUZE100_VGEN1VOL, 800000, 1550000, 50000),
++	PFUZE100_VGEN_REG(PFUZE100, VGEN2, PFUZE100_VGEN2VOL, 800000, 1550000, 50000),
++	PFUZE100_VGEN_REG(PFUZE100, VGEN3, PFUZE100_VGEN3VOL, 1800000, 3300000, 100000),
++	PFUZE100_VGEN_REG(PFUZE100, VGEN4, PFUZE100_VGEN4VOL, 1800000, 3300000, 100000),
++	PFUZE100_VGEN_REG(PFUZE100, VGEN5, PFUZE100_VGEN5VOL, 1800000, 3300000, 100000),
++	PFUZE100_VGEN_REG(PFUZE100, VGEN6, PFUZE100_VGEN6VOL, 1800000, 3300000, 100000),
++};
++
++static struct pfuze_regulator pfuze200_regulators[] = {
++	PFUZE100_SW_REG(PFUZE200, SW1AB, PFUZE100_SW1ABVOL, 300000, 1875000, 25000),
++	PFUZE100_SW_REG(PFUZE200, SW2, PFUZE100_SW2VOL, 400000, 1975000, 25000),
++	PFUZE100_SW_REG(PFUZE200, SW3A, PFUZE100_SW3AVOL, 400000, 1975000, 25000),
++	PFUZE100_SW_REG(PFUZE200, SW3B, PFUZE100_SW3BVOL, 400000, 1975000, 25000),
++	PFUZE100_SWB_REG(PFUZE200, SWBST, PFUZE100_SWBSTCON1, 0x3 , pfuze100_swbst),
++	PFUZE100_SWB_REG(PFUZE200, VSNVS, PFUZE100_VSNVSVOL, 0x7, pfuze100_vsnvs),
++	PFUZE100_FIXED_REG(PFUZE200, VREFDDR, PFUZE100_VREFDDRCON, 750000),
++	PFUZE100_VGEN_REG(PFUZE200, VGEN1, PFUZE100_VGEN1VOL, 800000, 1550000, 50000),
++	PFUZE100_VGEN_REG(PFUZE200, VGEN2, PFUZE100_VGEN2VOL, 800000, 1550000, 50000),
++	PFUZE100_VGEN_REG(PFUZE200, VGEN3, PFUZE100_VGEN3VOL, 1800000, 3300000, 100000),
++	PFUZE100_VGEN_REG(PFUZE200, VGEN4, PFUZE100_VGEN4VOL, 1800000, 3300000, 100000),
++	PFUZE100_VGEN_REG(PFUZE200, VGEN5, PFUZE100_VGEN5VOL, 1800000, 3300000, 100000),
++	PFUZE100_VGEN_REG(PFUZE200, VGEN6, PFUZE100_VGEN6VOL, 1800000, 3300000, 100000),
+ };
+ 
++static struct pfuze_regulator *pfuze_regulators;
++
+ #ifdef CONFIG_OF
++/* PFUZE100 */
+ static struct of_regulator_match pfuze100_matches[] = {
+ 	{ .name = "sw1ab",	},
+ 	{ .name = "sw1c",	},
+@@ -244,24 +269,56 @@ static struct of_regulator_match pfuze100_matches[] = {
+ 	{ .name = "vgen6",	},
+ };
+ 
++/* PFUZE200 */
++static struct of_regulator_match pfuze200_matches[] = {
++
++	{ .name = "sw1ab",	},
++	{ .name = "sw2",	},
++	{ .name = "sw3a",	},
++	{ .name = "sw3b",	},
++	{ .name = "swbst",	},
++	{ .name = "vsnvs",	},
++	{ .name = "vrefddr",	},
++	{ .name = "vgen1",	},
++	{ .name = "vgen2",	},
++	{ .name = "vgen3",	},
++	{ .name = "vgen4",	},
++	{ .name = "vgen5",	},
++	{ .name = "vgen6",	},
++};
++
++static struct of_regulator_match *pfuze_matches;
++
+ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ {
+ 	struct device *dev = chip->dev;
+ 	struct device_node *np, *parent;
+ 	int ret;
+ 
+-	np = of_node_get(dev->parent->of_node);
++	np = of_node_get(dev->of_node);
+ 	if (!np)
+ 		return 0;
+ 
+-	parent = of_find_node_by_name(np, "regulators");
++	parent = of_get_child_by_name(np, "regulators");
+ 	if (!parent) {
+ 		dev_err(dev, "regulators node not found\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = of_regulator_match(dev, parent, pfuze100_matches,
+-				 ARRAY_SIZE(pfuze100_matches));
++	switch (chip->chip_id) {
++	case PFUZE200:
++		pfuze_matches = pfuze200_matches;
++		ret = of_regulator_match(dev, parent, pfuze200_matches,
++					 ARRAY_SIZE(pfuze200_matches));
++		break;
++
++	case PFUZE100:
++	default:
++		pfuze_matches = pfuze100_matches;
++		ret = of_regulator_match(dev, parent, pfuze100_matches,
++					 ARRAY_SIZE(pfuze100_matches));
++		break;
++	}
+ 
+ 	of_node_put(parent);
+ 	if (ret < 0) {
+@@ -275,12 +332,12 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 
+ static inline struct regulator_init_data *match_init_data(int index)
+ {
+-	return pfuze100_matches[index].init_data;
++	return pfuze_matches[index].init_data;
+ }
+ 
+ static inline struct device_node *match_of_node(int index)
+ {
+-	return pfuze100_matches[index].of_node;
++	return pfuze_matches[index].of_node;
+ }
+ #else
+ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+@@ -308,7 +365,8 @@ static int pfuze_identify(struct pfuze_chip *pfuze_chip)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (value & 0x0f) {
++	if ((value & 0x0f) != pfuze_chip->chip_id) {
++		/* device id NOT match with your setting */
+ 		dev_warn(pfuze_chip->dev, "Illegal ID: %x\n", value);
+ 		return -ENODEV;
+ 	}
+@@ -344,17 +402,31 @@ static int pfuze100_regulator_probe(struct i2c_client *client,
+ 	    dev_get_platdata(&client->dev);
+ 	struct regulator_config config = { };
+ 	int i, ret;
++	const struct of_device_id *match;
++	u32 regulator_num;
++	u32 sw_check_start, sw_check_end;
+ 
+ 	pfuze_chip = devm_kzalloc(&client->dev, sizeof(*pfuze_chip),
+ 			GFP_KERNEL);
+ 	if (!pfuze_chip)
+ 		return -ENOMEM;
+ 
+-	i2c_set_clientdata(client, pfuze_chip);
+-
+-	memcpy(pfuze_chip->regulator_descs, pfuze100_regulators,
+-		sizeof(pfuze_chip->regulator_descs));
++	if (client->dev.of_node) {
++		match = of_match_device(of_match_ptr(pfuze_dt_ids),
++				&client->dev);
++		if (!match) {
++			dev_err(&client->dev, "Error: No device match found\n");
++			return -ENODEV;
++		}
++		pfuze_chip->chip_id = (int)(long)match->data;
++	} else if (id) {
++		pfuze_chip->chip_id = id->driver_data;
++	} else {
++		dev_err(&client->dev, "No dts match or id table match found\n");
++		return -ENODEV;
++	}
+ 
++	i2c_set_clientdata(client, pfuze_chip);
+ 	pfuze_chip->dev = &client->dev;
+ 
+ 	pfuze_chip->regmap = devm_regmap_init_i2c(client, &pfuze_regmap_config);
+@@ -371,11 +443,34 @@ static int pfuze100_regulator_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 
++	/* use the right regulators after identify the right device */
++	switch (pfuze_chip->chip_id) {
++	case PFUZE200:
++		pfuze_regulators = pfuze200_regulators;
++		regulator_num = ARRAY_SIZE(pfuze200_regulators);
++		sw_check_start = PFUZE200_SW2;
++		sw_check_end = PFUZE200_SW3B;
++		break;
++
++	case PFUZE100:
++	default:
++		pfuze_regulators = pfuze100_regulators;
++		regulator_num = ARRAY_SIZE(pfuze100_regulators);
++		sw_check_start = PFUZE100_SW2;
++		sw_check_end = PFUZE100_SW4;
++		break;
++	}
++	dev_info(&client->dev, "pfuze%s found.\n",
++		(pfuze_chip->chip_id == PFUZE100) ? "100" : "200");
++
++	memcpy(pfuze_chip->regulator_descs, pfuze_regulators,
++		sizeof(pfuze_chip->regulator_descs));
++
+ 	ret = pfuze_parse_regulators_dt(pfuze_chip);
+ 	if (ret)
+ 		return ret;
+ 
+-	for (i = 0; i < PFUZE100_MAX_REGULATOR; i++) {
++	for (i = 0; i < regulator_num; i++) {
+ 		struct regulator_init_data *init_data;
+ 		struct regulator_desc *desc;
+ 		int val;
+@@ -388,7 +483,7 @@ static int pfuze100_regulator_probe(struct i2c_client *client,
+ 			init_data = match_init_data(i);
+ 
+ 		/* SW2~SW4 high bit check and modify the voltage value table */
+-		if (i > PFUZE100_SW1C && i < PFUZE100_SWBST) {
++		if (i >= sw_check_start && i <= sw_check_end) {
+ 			regmap_read(pfuze_chip->regmap, desc->vsel_reg, &val);
+ 			if (val & 0x40) {
+ 				desc->min_uV = 800000;
+@@ -440,6 +535,6 @@ static struct i2c_driver pfuze_driver = {
+ module_i2c_driver(pfuze_driver);
+ 
+ MODULE_AUTHOR("Robin Gong <b38343@freescale.com>");
+-MODULE_DESCRIPTION("Regulator Driver for Freescale PFUZE100 PMIC");
++MODULE_DESCRIPTION("Regulator Driver for Freescale PFUZE100/PFUZE200 PMIC");
+ MODULE_LICENSE("GPL v2");
+ MODULE_ALIAS("i2c:pfuze100-regulator");
+diff --git a/drivers/rtc/rtc-snvs.c b/drivers/rtc/rtc-snvs.c
+index 6c6b684..dc984b5 100644
+--- a/drivers/rtc/rtc-snvs.c
++++ b/drivers/rtc/rtc-snvs.c
+@@ -243,6 +243,7 @@ static irqreturn_t snvs_rtc_irq_handler(int irq, void *dev_id)
+ 	return events ? IRQ_HANDLED : IRQ_NONE;
+ }
+ 
++#ifndef CONFIG_POWER_RESET_UDOO
+ static void snvs_poweroff(void)
+ {
+ 	u32 value;
+@@ -251,6 +252,7 @@ static void snvs_poweroff(void)
+ 	/* set TOP and DP_EN bit */
+ 	writel(value | 0x60, snvs_base + SNVS_LPCR);
+ }
++#endif
+ 
+ static int snvs_rtc_probe(struct platform_device *pdev)
+ {
+@@ -307,8 +309,10 @@ static int snvs_rtc_probe(struct platform_device *pdev)
+ 	 * if no specific power off function in board file, power off system by
+ 	 * SNVS
+ 	 */
++#ifndef CONFIG_POWER_RESET_UDOO
+ 	if (!pm_power_off)
+ 		pm_power_off = snvs_poweroff;
++#endif
+ 
+ 	return 0;
+ }
+diff --git a/drivers/usb/chipidea/ci_hdrc_imx.c b/drivers/usb/chipidea/ci_hdrc_imx.c
+index 17ac14f..bdde47b 100644
+--- a/drivers/usb/chipidea/ci_hdrc_imx.c
++++ b/drivers/usb/chipidea/ci_hdrc_imx.c
+@@ -75,6 +75,7 @@ struct ci_hdrc_imx_data {
+ 	struct usb_phy *phy;
+ 	struct platform_device *ci_pdev;
+ 	struct clk *clk;
++	struct clk *clk_phy;
+ 	struct imx_usbmisc_data *usbmisc_data;
+ 	bool supports_runtime_pm;
+ 	bool in_lpm;
+@@ -274,10 +275,22 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	data->clk_phy = devm_clk_get(&pdev->dev, "phy");
++	if (IS_ERR(data->clk_phy)) {
++		data->clk_phy = NULL;
++	} else {
++		ret = clk_prepare_enable(data->clk_phy);
++		if (ret) {
++			dev_err(&pdev->dev,
++				"Failed to enable clk_phy: %d\n", ret);
++			goto err_clk;
++		}
++	}
++
+ 	data->phy = devm_usb_get_phy_by_phandle(&pdev->dev, "fsl,usbphy", 0);
+ 	if (IS_ERR(data->phy)) {
+ 		ret = PTR_ERR(data->phy);
+-		goto err_clk;
++		goto err_clk_phy;
+ 	}
+ 
+ 	pdata.phy = data->phy;
+@@ -383,6 +396,9 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
+ 
+ disable_device:
+ 	ci_hdrc_remove_device(data->ci_pdev);
++err_clk_phy:
++	if (data->clk_phy)
++		clk_disable_unprepare(data->clk_phy);
+ remove_charger:
+ 	if (data->imx6_usb_charger_detection)
+ 		imx6_usb_remove_charger(&data->charger);
+@@ -397,6 +413,8 @@ static int ci_hdrc_imx_remove(struct platform_device *pdev)
+ 	struct ci_hdrc_imx_data *data = platform_get_drvdata(pdev);
+ 
+ 	ci_hdrc_remove_device(data->ci_pdev);
++	if (data->clk_phy)
++		clk_disable_unprepare(data->clk_phy);
+ 	if (data->supports_runtime_pm) {
+ 		pm_runtime_get_sync(&pdev->dev);
+ 		pm_runtime_disable(&pdev->dev);
+diff --git a/drivers/usb/chipidea/usbmisc_imx.c b/drivers/usb/chipidea/usbmisc_imx.c
+index 20be137..54d13ef 100644
+--- a/drivers/usb/chipidea/usbmisc_imx.c
++++ b/drivers/usb/chipidea/usbmisc_imx.c
+@@ -11,6 +11,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/of_platform.h>
++#include <linux/clk.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/delay.h>
+@@ -66,6 +67,7 @@ struct usbmisc_ops {
+ struct imx_usbmisc {
+ 	void __iomem *base;
+ 	spinlock_t lock;
++    struct clk *clk;
+ 	const struct usbmisc_ops *ops;
+ };
+ 
+@@ -343,6 +345,7 @@ static int usbmisc_imx_probe(struct platform_device *pdev)
+ {
+ 	struct resource	*res;
+ 	struct imx_usbmisc *data;
++    int ret;
+ 	struct of_device_id *tmp_dev;
+ 
+ 	if (usbmisc)
+@@ -359,6 +362,20 @@ static int usbmisc_imx_probe(struct platform_device *pdev)
+ 	if (IS_ERR(data->base))
+ 		return PTR_ERR(data->base);
+ 
++    data->clk = devm_clk_get(&pdev->dev, NULL);
++    if (IS_ERR(data->clk)) {
++		dev_err(&pdev->dev,
++        	"failed to get clock, err=%ld\n", PTR_ERR(data->clk));
++		return PTR_ERR(data->clk);
++    }
++ 
++   ret = clk_prepare_enable(data->clk);
++   if (ret) {
++		dev_err(&pdev->dev,
++			"clk_prepare_enable failed, err=%d\n", ret);
++        return ret;
++   }
++ 
+ 	tmp_dev = (struct of_device_id *)
+ 		of_match_device(usbmisc_imx_dt_ids, &pdev->dev);
+ 	data->ops = (const struct usbmisc_ops *)tmp_dev->data;
+@@ -381,6 +398,7 @@ static int usbmisc_imx_probe(struct platform_device *pdev)
+ 
+ static int usbmisc_imx_remove(struct platform_device *pdev)
+ {
++    clk_disable_unprepare(usbmisc->clk);
+ 	usbmisc = NULL;
+ 	return 0;
+ }
+diff --git a/include/linux/regulator/pfuze100.h b/include/linux/regulator/pfuze100.h
+index 65d550b..364f7a7 100644
+--- a/include/linux/regulator/pfuze100.h
++++ b/include/linux/regulator/pfuze100.h
+@@ -35,6 +35,20 @@
+ #define PFUZE100_VGEN6		14
+ #define PFUZE100_MAX_REGULATOR	15
+ 
++#define PFUZE200_SW1AB		0
++#define PFUZE200_SW2		1
++#define PFUZE200_SW3A		2
++#define PFUZE200_SW3B		3
++#define PFUZE200_SWBST		4
++#define PFUZE200_VSNVS		5
++#define PFUZE200_VREFDDR	6
++#define PFUZE200_VGEN1		7
++#define PFUZE200_VGEN2		8
++#define PFUZE200_VGEN3		9
++#define PFUZE200_VGEN4		10
++#define PFUZE200_VGEN5		11
++#define PFUZE200_VGEN6		12
++
+ struct regulator_init_data;
+ 
+ struct pfuze_regulator_platform_data {

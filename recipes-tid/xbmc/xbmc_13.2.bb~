@@ -9,8 +9,8 @@ LIC_FILES_CHKSUM = "file://LICENSE.GPL;md5=6eb631b6da7fdb01508a80213ffc35ff"
 
 DEPENDS = "yajl fribidi mpeg2dec curl python libmodplug libmicrohttpd \
            sqlite3 libcdio libpcre boost lzo taglib libtinyxml jasper libass \
-           libmad libsamplerate0 libvorbis tiff libxslt libgpg-error \
-           swig-native gperf-native unzip-native zip-native \
+           libmad jpeg libsamplerate0 libvorbis tiff libxslt libgpg-error \
+           virtual/egl swig-native gperf-native unzip-native zip-native \
            libcec rtmpdump ffmpeg libbluray python-stringold \
                    python-mime \
                    python-logging \
