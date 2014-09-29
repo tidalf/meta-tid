@@ -10,8 +10,8 @@ file://1bc304cd507fe9eb5673223f0d76ec0aa4ff55f3.patch \
 file://2ce63690b95fb322a9e840c7c57f1982d0d16e82.patch \
 file://20e36aab7589364348b595e66b834ce3a95bd2af.patch \
 file://d6e35d087fe9d71f4ac201e89db478485c808890.patch \ 
-file://iodiff.patch \ 
 file://defconfig" 
+# file://iodiff.patch 
 
 do_configure_append(){ 
     ARCH=arm make dtbs
