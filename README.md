@@ -6,11 +6,13 @@ Layer for XBMC on udoo board
 
 This Layer is forked from Wolfgar's (http://github.com/wolfgar/meta-stef) 
 
-It's upgraded to work with poky daisy layer (except for freescale binaries that are kept to old version) and udoo kernel 3.0.35
+daisy branch work with poky daisy layer except for freescale binaries that are kept to old version and udoo kernel 3.0.35
+daisy-3.10.17 is up to date branch with standard meta-freescale-arm layer.
+
 
 added 
 =====
- - Xbmc (Gotham 13.2 Final)
+ - Xbmc (Gotham 13.2 Final and git)
  - TvHeadend (3.6)
  - Transmission
  - Sabnzbd
