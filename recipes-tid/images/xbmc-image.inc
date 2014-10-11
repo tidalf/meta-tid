@@ -27,6 +27,7 @@ DEVTOOLS += " \
 #    fsl-rc-local 
 SYSTEMTOOLS += " \
     networkmanager \
+    v4l-utils \
     python-core \
     python-re \
     python-json \

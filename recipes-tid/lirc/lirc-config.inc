@@ -1,10 +1,10 @@
-EXTRA_OECONF = "--with-kerneldir=${STAGING_KERNEL_DIR} --with-driver=${DRIVER}"
+EXTRA_OECONF = "--with-kerneldir=${STAGING_KERNEL_DIR} --with-driver=all"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=0636e73ff0215e8d672dc4c32c317bb3"
 
 
-DRIVER ?= "uirt2_raw"
+DRIVER ?= "all"
 
 # fails to build at the moment, re-enable later
 #DRIVER_collie = "sa1100"
